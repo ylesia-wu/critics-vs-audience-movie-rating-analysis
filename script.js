@@ -1,5 +1,5 @@
-// main.js
-// Combined visualizations for Q1 + Q2
+// script.js
+// Combined visualizations for Q1 + Q2 + Q5
 // D3.js v7
 
 //--------------------------------------------------
@@ -189,7 +189,6 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
     const legend = svg2.append("g")
         .attr("transform", `translate(${width2 + 10}, ${height2 / 2 - 30})`);
 
-    // Legend title (optional)
     legend.append("text")
         .attr("x", 0)
         .attr("y", -10)
@@ -197,7 +196,6 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
         .attr("font-weight", "bold")
         .attr("font-size", "13px");
 
-    // Critics
     legend.append("rect")
         .attr("x", 0)
         .attr("y", 5)
@@ -210,7 +208,6 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
         .text("Critics")
         .attr("font-size", "12px");
 
-    // Audience
     legend.append("rect")
         .attr("x", 0)
         .attr("y", 30)
@@ -222,6 +219,86 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
         .attr("y", 42)
         .text("Audience")
         .attr("font-size", "12px");
-
 });
 
+//--------------------------------------------------
+// Q5: Venn Diagram (Top 30 unique movies)
+//--------------------------------------------------
+(function () {
+    const width = 800, height = 500;
+    const svg = d3.select("#chart-q5").append("svg").attr("width", width).attr("height", height);
+
+    d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
+        data.forEach(d => {
+            d.critic_score = +d.critic_score;
+            d.audience_score = +d.audience_score;
+        });
+
+        data = data.filter(d => d.title && !isNaN(d.critic_score) && !isNaN(d.audience_score));
+        const uniqueByTitle = Array.from(
+            d3.rollup(data, v => v[0], d => d.title)
+        ).map(([title, d]) => d);
+
+        const topCritics = uniqueByTitle
+            .sort((a, b) => d3.descending(a.critic_score, b.critic_score))
+            .slice(0, 30);
+        const topAudience = uniqueByTitle
+            .sort((a, b) => d3.descending(a.audience_score, b.audience_score))
+            .slice(0, 30);
+
+        const criticsSet = new Set(topCritics.map(d => d.title));
+        const audienceSet = new Set(topAudience.map(d => d.title));
+        const overlap = [...criticsSet].filter(t => audienceSet.has(t));
+
+        console.log("Overlap count:", overlap.length, overlap);
+
+        const sets = [
+            { name: "Critics", movies: topCritics.filter(d => !audienceSet.has(d.title)), color: "#5DADE2", x: 280, y: height / 2 },
+            { name: "Audience", movies: topAudience.filter(d => !criticsSet.has(d.title)), color: "#E74C3C", x: 520, y: height / 2 },
+            { name: "Overlap", movies: uniqueByTitle.filter(d => overlap.includes(d.title)), color: "#9B59B6", x: 400, y: height / 2 }
+        ];
+
+        svg.selectAll("circle")
+            .data(sets.slice(0, 2))
+            .join("circle")
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y)
+            .attr("r", 150)
+            .attr("fill", d => d.color)
+            .attr("opacity", 0.4)
+            .attr("stroke", "black");
+
+        svg.selectAll(".label")
+            .data(sets.slice(0, 2))
+            .join("text")
+            .attr("x", d => d.x)
+            .attr("y", d => d.y - 170)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "18px")
+            .attr("font-weight", "bold")
+            .text(d => d.name);
+
+        function showMovieTitles(set, offsetX = 0) {
+            const g = svg.append("g");
+            g.selectAll("text.movie")
+                .data(set.movies.slice(0, 15))
+                .join("text")
+                .attr("x", set.x + offsetX)
+                .attr("y", (d, i) => set.y - 120 + i * 16)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "11px")
+                .attr("fill", "black")
+                .text(d => d.title.length > 25 ? d.title.slice(0, 25) + "..." : d.title)
+                .on("mouseover", (e, d) => {
+                    tooltip.style("visibility", "visible")
+                        .html(`<strong>${d.title}</strong><br>${set.name}`);
+                })
+                .on("mousemove", e => tooltip.style("top", (e.pageY - 35) + "px").style("left", (e.pageX + 10) + "px"))
+                .on("mouseout", () => tooltip.style("visibility", "hidden"));
+        }
+
+        showMovieTitles(sets[0], -30);
+        showMovieTitles(sets[1], 30);
+        showMovieTitles(sets[2], 0);
+    });
+})();
