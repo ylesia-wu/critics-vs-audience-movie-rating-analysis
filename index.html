@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Critics vs Audience Visualizations</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 60px;
+        }
+
+        .tooltip {
+            position: absolute;
+            padding: 6px 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: 5px;
+            font-size: 12px;
+            visibility: hidden;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Q1: Average Critic – Audience Score Difference by Genre</h2>
+    <div class="chart-container">
+        <div id="chart-q1"></div>
+    </div>
+
+    <h2>Q2: Average Ratings Over Time (Critics vs Audience)</h2>
+    <div class="chart-container">
+        <div id="chart-q2"></div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>
