@@ -1,0 +1,139 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Critics vs Audience Visualizations</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h2>Q1: Average Critic – Audience Score Difference by Genre</h2>
+    <div class="chart-container">
+        <div id="chart-q1"></div>
+    </div>
+
+    <h2>Q2: Average Ratings Over Time (Critics vs Audience)</h2>
+    <div class="chart-container">
+        <div id="chart-q2"></div>
+    </div>
+
+    <h2>Q5: Overlap Between Top 30 Critics' and Audience's Favorite Movies</h2>
+    <div class="chart-container">
+        <div id="chart-q5"></div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script src="script.js"></script>
+</body>
+
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Critics vs Audience: The Double Twist Story</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+    <div id="container">
+
+        <!-- PAGE 1: Guessing Game -->
+        <section class="page" id="page1">
+            <h1>Critics vs Audience: Are They Really That Different?</h1>
+            <p class="section-desc">
+                Let’s start with a guessing game! You’ll see a movie poster and one score (Critics or Audience).
+                Can you guess the other score using the slider?
+            </p>
+            <p>TODO: guessing game movie 1</p>
+            <p>TODO: guessing game movie 2</p>
+            <p>TODO: guessing game movie 3</p>
+            <div id="guessing-game-container">
+                <!-- 🧩 JS will render guessing game (poster + slider + reveal) -->
+            </div>
+            <button class="load-more" onclick="showNextPage(2)">Load More ↓</button>
+        </section>
+
+
+        <!-- PAGE 2: Surprising Outliers -->
+        <section class="page hidden" id="page2">
+            <h2>Wait... Not Always! Some Movies Break the Pattern</h2>
+            <p class="section-desc">
+                While many movies have similar Critics and Audience scores, some famous films divide opinions sharply —
+                like <strong>Joker</strong> or <strong>The Last Jedi</strong>.
+            </p>
+            <div id="outlier-examples">
+                <!-- Example posters + their score differences -->
+            </div>
+            <button class="load-more" onclick="showNextPage(3)">Load More ↓</button>
+        </section>
+
+
+        <!-- PAGE 3: Evidence of Disagreement -->
+        <section class="page hidden" id="page3">
+            <h2>Look Closer: Critics and Audiences Often Disagree</h2>
+            <p class="section-desc">First, by genre: some categories show big differences.</p>
+            <div class="chart-container">
+                <div id="chart-q1"></div> <!-- Genre difference chart -->
+            </div>
+
+            <p class="section-desc">Even their top 30 favorite movies barely overlap.</p>
+            <div class="chart-container">
+                <div id="chart-q5"></div> <!-- Venn diagram -->
+            </div>
+            <button class="load-more" onclick="showNextPage(4)">Load More ↓</button>
+        </section>
+
+
+        <!-- PAGE 4: Main Message -->
+        <section class="page hidden" id="page4">
+            <h2>They’re More Aligned Than You Think</h2>
+            <p class="section-desc">
+                Across thousands of movies and decades of data, the overall correlation between Critics and Audiences
+                remains strong — especially in recent years.
+            </p>
+            <div class="chart-container">
+                <div id="chart-q2"></div> <!-- Avg Scores Over Time -->
+            </div>
+            <p>TODO: Oscar visualization</p>
+            <button class="load-more" onclick="showNextPage(5)">Load More ↓</button>
+        </section>
+
+
+        <!-- PAGE 5: Solution & Recommendation -->
+        <section class="page hidden" id="page5">
+            <h2>So... Who Should You Trust?</h2>
+            <p class="section-desc">
+                Turns out, you can trust both. Critics and audiences usually agree on what’s good.
+                Let’s find some movies both groups love!
+            </p>
+            <div id="recommendation-tool"></div> <!-- Interactive recommender -->
+            <p>TODO: interactive recommendation tool </p>
+            <p class="footer-note">Created by Team Yilin Jiang Ylesia Wu Mingjiao Diao</p>
+        </section>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        // Handle "Load More" page transitions
+        function showNextPage(pageNumber) {
+            document.getElementById(`page${pageNumber - 1}`).classList.add("hidden");
+            document.getElementById(`page${pageNumber}`).classList.remove("hidden");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    </script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
