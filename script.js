@@ -339,7 +339,7 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
 // Q5: Word-Cloud Venn
 //--------------------------------------------------
 (function () {
-    d3.csv("data/imdb_tomatoes.csv").then(data => {
+    d3.csv("data/rotten_tomatoes.csv").then(data => {
         if (!data || !data.length) {
             console.error("CSV file is empty or missing");
             return;
@@ -381,7 +381,7 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
         }
         data = deduped;
 
-        const topN = 70;
+        const topN = 50;
         const topCritics = data.slice().sort((a, b) => (b.critic - a.critic) || a.title.localeCompare(b.title)).slice(0, topN);
         const topAudience = data.slice().sort((a, b) => (b.audience - a.audience) || a.title.localeCompare(b.title)).slice(0, topN);
 
@@ -394,8 +394,8 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
         const overlap = data.filter(d => overlapSet.has(d.title));
 
         // === visualization setup ===
-        const W = window.innerWidth * 0.98;
-        const H = window.innerHeight * 0.95;
+        const W = window.innerWidth * 0.8;
+        const H = window.innerHeight * 0.8;
         const margin = { top: 0.05 * H, right: 0.1 * W, bottom: 0.05 * H, left: 0.1 * W };
         const innerW = W - margin.left - margin.right;
         const innerH = H - margin.top - margin.bottom;
@@ -407,8 +407,9 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
             .attr("preserveAspectRatio", "xMidYMid meet");
 
         const centerY = margin.top + innerH / 2;
-        const maxFont = Math.max(22, Math.min(32, W / 55));
-        const minFont = Math.max(10, Math.min(16, W / 160));
+        const maxFont = Math.max(18, Math.min(26, W / 65));
+        const minFont = Math.max(8, Math.min(13, W / 180));
+
 
         const centers = {
             critic: { x: W * 0.36, y: centerY },

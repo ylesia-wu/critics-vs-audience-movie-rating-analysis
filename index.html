@@ -93,13 +93,20 @@
             <div id="recommendation-tool"></div> <!-- Interactive recommender -->
             <p>TODO: interactive recommendation tool </p>
             <p class="footer-note">Created by Team Yilin Jiang, Ylesia Wu, Mingjiao Diao</p>
+
+            <!-- ✅ Start Over Button -->
+            <div style="text-align:center; margin-top:40px;">
+                <button id="reset-btn" class="load-more">Back to Top ↑</button>
+            </div>
         </section>
     </div>
 
     <div class="tooltip" id="tooltip"></div>
 
     <script>
-        // Handle "Load More" page transitions
+        // ------------------------------
+        // Handle "Load More" transitions
+        // ------------------------------
         function showNextPage(pageNumber, button) {
             const nextPage = document.getElementById(`page${pageNumber}`);
             if (nextPage) {
@@ -108,8 +115,58 @@
                 if (button) button.style.display = "none";
                 // Smoothly scroll to the next section
                 nextPage.scrollIntoView({ behavior: "smooth" });
+
+                // ✅ Save progress to localStorage
+                localStorage.setItem("lastPage", pageNumber);
             }
         }
+
+        // ------------------------------
+        // Restore state on page load
+        // ------------------------------
+        window.addEventListener("load", () => {
+            const lastPage = parseInt(localStorage.getItem("lastPage")) || 1;
+            for (let i = 2; i <= lastPage; i++) {
+                const section = document.getElementById(`page${i}`);
+                if (section) {
+                    section.classList.remove("hidden");
+                    // Also hide "Load More" buttons for previous pages
+                    const prevBtn = document.querySelector(`#page${i - 1} .load-more`);
+                    if (prevBtn) prevBtn.style.display = "none";
+                }
+            }
+            // Scroll to the last visible page
+            document.getElementById(`page${lastPage}`)?.scrollIntoView({ behavior: "instant" });
+        });
+
+        // ------------------------------
+        // Reset / Start Over button logic
+        // ------------------------------
+        document.addEventListener("DOMContentLoaded", () => {
+            const resetBtn = document.getElementById("reset-btn");
+            resetBtn.addEventListener("click", () => {
+                // Clear saved progress
+                localStorage.removeItem("lastPage");
+
+                // Hide all sections except page 1
+                const pages = document.querySelectorAll(".page");
+                pages.forEach((p, i) => {
+                    if (i === 0) {
+                        p.classList.remove("hidden");
+                    } else {
+                        p.classList.add("hidden");
+                    }
+                });
+
+                // Restore all Load More buttons
+                document.querySelectorAll(".load-more").forEach(btn => {
+                    btn.style.display = "block";
+                });
+
+                // Scroll back to top smoothly
+                document.getElementById("page1").scrollIntoView({ behavior: "smooth" });
+            });
+        });
     </script>
 
     <script src="script.js"></script>
