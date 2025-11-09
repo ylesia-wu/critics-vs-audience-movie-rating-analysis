@@ -11,9 +11,22 @@
 <body>
     <div id="container">
 
-        <!-- PAGE 1: Guessing Game -->
+        <!-- PAGE 1: Title Page -->
         <section class="page" id="page1">
-            <h1>Critics vs Audience: Are They Really That Different?</h1>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; text-align:center;">
+                <h1 style="font-size:3rem; margin-bottom:20px;">Critics vs Audience</h1>
+                <h2 style="font-size:1.8rem; font-weight:400; color:#555;">The Double Twist Story</h2>
+                <p class="section-desc" style="max-width:600px; margin-top:40px;">
+                    Explore how movie critics and audiences agree — or clash — when it comes to rating the same films.
+                    Dive into data, visualizations, and surprises along the way.
+                </p>
+                <button class="load-more" onclick="showNextPage(2, this)" style="margin-top:60px;">Start the Journey ↓</button>
+            </div>
+        </section>
+
+        <!-- PAGE 2: Guessing Game -->
+        <section class="page hidden" id="page2">
+            <h1>Are They Really That Different?</h1>
             <p class="section-desc">
                 Let’s start with a guessing game! You’ll see a movie poster and one score (Critics or Audience).
                 Can you guess the other score using the slider?
@@ -24,12 +37,11 @@
             <div id="guessing-game-container">
                 <!-- 🧩 JS will render guessing game (poster + slider + reveal) -->
             </div>
-            <button class="load-more" onclick="showNextPage(2, this)">Load More ↓</button>
+            <button class="load-more" onclick="showNextPage(3, this)">Load More ↓</button>
         </section>
 
-
-        <!-- PAGE 2: Surprising Outliers -->
-        <section class="page hidden" id="page2">
+        <!-- PAGE 3: Surprising Outliers -->
+        <section class="page hidden" id="page3">
             <h2>Wait... Not Always! Some Movies Break the Pattern</h2>
             <p class="section-desc">
                 While many movies have similar Critics and Audience scores, some famous films divide opinions sharply —
@@ -38,12 +50,11 @@
             <div id="outlier-examples">
                 <!-- Example posters + their score differences -->
             </div>
-            <button class="load-more" onclick="showNextPage(3, this)">Load More ↓</button>
+            <button class="load-more" onclick="showNextPage(4, this)">Load More ↓</button>
         </section>
 
-
-        <!-- PAGE 3: Evidence of Disagreement -->
-        <section class="page hidden" id="page3">
+        <!-- PAGE 4: Evidence of Disagreement -->
+        <section class="page hidden" id="page4">
             <h2>Look Closer: Critics and Audiences Often Disagree</h2>
             <p class="section-desc">First, by genre: some categories show big differences.</p>
             <div class="chart-container">
@@ -55,21 +66,17 @@
                 <div id="chart-q5"></div> <!-- Venn diagram -->
             </div>
 
-            <!-- 🔽 New visualization inserted below Q5 -->
             <h2>Top 50: Critic vs Audience</h2>
-
             <p class="section-desc">A word-cloud style Venn showing the top 50 movies preferred by each group.</p>
             <div class="chart-container">
-                <div id="venn"></div> <!-- New word-cloud Venn visualization -->
+                <div id="venn"></div>
             </div>
-            <!-- 🔼 End of new visualization -->
 
-            <button class="load-more" onclick="showNextPage(4, this)">Load More ↓</button>
+            <button class="load-more" onclick="showNextPage(5, this)">Load More ↓</button>
         </section>
 
-
-        <!-- PAGE 4: Main Message -->
-        <section class="page hidden" id="page4">
+        <!-- PAGE 5: Main Message -->
+        <section class="page hidden" id="page5">
             <h2>They’re More Aligned Than You Think</h2>
             <p class="section-desc">
                 Across thousands of movies and decades of data, the overall correlation between Critics and Audiences
@@ -79,22 +86,21 @@
                 <div id="chart-q2"></div> <!-- Avg Scores Over Time -->
             </div>
             <p>TODO: Oscar visualization</p>
-            <button class="load-more" onclick="showNextPage(5, this)">Load More ↓</button>
+            <button class="load-more" onclick="showNextPage(6, this)">Load More ↓</button>
         </section>
 
-
-        <!-- PAGE 5: Solution & Recommendation -->
-        <section class="page hidden" id="page5">
+        <!-- PAGE 6: Solution & Recommendation -->
+        <section class="page hidden" id="page6">
             <h2>So... Who Should You Trust?</h2>
             <p class="section-desc">
                 Turns out, you can trust both. Critics and audiences usually agree on what’s good.
                 Let’s find some movies both groups love!
             </p>
-            <div id="recommendation-tool"></div> <!-- Interactive recommender -->
+            <div id="recommendation-tool"></div>
             <p>TODO: interactive recommendation tool </p>
             <p class="footer-note">Created by Team Yilin Jiang, Ylesia Wu, Mingjiao Diao</p>
 
-            <!-- ✅ Start Over Button -->
+            <!-- ✅ Back to Top Button -->
             <div style="text-align:center; margin-top:40px;">
                 <button id="reset-btn" class="load-more">Back to Top ↑</button>
             </div>
@@ -111,12 +117,8 @@
             const nextPage = document.getElementById(`page${pageNumber}`);
             if (nextPage) {
                 nextPage.classList.remove("hidden");
-                // Hide the clicked button so it doesn’t trigger again
                 if (button) button.style.display = "none";
-                // Smoothly scroll to the next section
                 nextPage.scrollIntoView({ behavior: "smooth" });
-
-                // ✅ Save progress to localStorage
                 localStorage.setItem("lastPage", pageNumber);
             }
         }
@@ -130,40 +132,31 @@
                 const section = document.getElementById(`page${i}`);
                 if (section) {
                     section.classList.remove("hidden");
-                    // Also hide "Load More" buttons for previous pages
                     const prevBtn = document.querySelector(`#page${i - 1} .load-more`);
                     if (prevBtn) prevBtn.style.display = "none";
                 }
             }
-            // Scroll to the last visible page
             document.getElementById(`page${lastPage}`)?.scrollIntoView({ behavior: "instant" });
         });
 
         // ------------------------------
-        // Reset / Start Over button logic
+        // Reset / Back to Top logic
         // ------------------------------
         document.addEventListener("DOMContentLoaded", () => {
             const resetBtn = document.getElementById("reset-btn");
             resetBtn.addEventListener("click", () => {
-                // Clear saved progress
                 localStorage.removeItem("lastPage");
 
-                // Hide all sections except page 1
                 const pages = document.querySelectorAll(".page");
                 pages.forEach((p, i) => {
-                    if (i === 0) {
-                        p.classList.remove("hidden");
-                    } else {
-                        p.classList.add("hidden");
-                    }
+                    if (i === 0) p.classList.remove("hidden");
+                    else p.classList.add("hidden");
                 });
 
-                // Restore all Load More buttons
                 document.querySelectorAll(".load-more").forEach(btn => {
                     btn.style.display = "block";
                 });
 
-                // Scroll back to top smoothly
                 document.getElementById("page1").scrollIntoView({ behavior: "smooth" });
             });
         });
