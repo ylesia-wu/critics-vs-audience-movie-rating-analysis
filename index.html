@@ -367,18 +367,17 @@
   <div class="tooltip" id="tooltip"></div>
 
   <script>
-    function showNextPage(next, btn) {
-      // hide current page (if triggered from a button inside it)
-      const current = btn && btn.closest(".page");
-      if (current) current.classList.add("hidden");
+    // function showNextPage(next, btn) {
+    //   const nextPage = document.getElementById(`page${next}`);
+    //   if (nextPage) {
+    //     nextPage.classList.remove("hidden");
+    //     nextPage.scrollIntoView({ behavior: "smooth" });
+    //     localStorage.setItem("lastPage", next);
+    //   }
+    //   if (btn) btn.style.display = "none";
+    // }
 
-      // show target page
-      const nextPage = document.getElementById(`page${next}`);
-      if (nextPage) {
-        nextPage.classList.remove("hidden");
-        nextPage.scrollIntoView({ behavior: "smooth" });
-      }
-    }
+
 
 
     window.addEventListener("load", () => {

@@ -8,12 +8,15 @@
 const tooltip = d3.select("#tooltip");
 
 function showNextPage(next, btn) {
-  const current = btn.closest(".page");
-  if (current) current.classList.add("hidden");
   const nextPage = document.getElementById(`page${next}`);
-  if (nextPage) nextPage.classList.remove("hidden");
-  nextPage?.scrollIntoView({ behavior: "smooth" });
+  if (nextPage) {
+    nextPage.classList.remove("hidden");
+    nextPage.scrollIntoView({ behavior: "smooth" });
+    localStorage.setItem("lastPage", next);
+  }
+  if (btn) btn.style.display = "none";
 }
+
 
 
 //--------------------------------------------------
