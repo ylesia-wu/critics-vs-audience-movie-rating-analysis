@@ -914,7 +914,7 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
         overlap: { x: W / 2, y: centerY }
       };
 
-      const unifiedR = innerH / 2;
+      const unifiedR = (innerH-40) / 2;
       const padFracCritic = 0.3;
       const padFracAudience = 0.35;
 
@@ -1048,7 +1048,30 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
           .on("mouseover", (e, d) => tooltip.style("visibility", "visible").html(`<strong>${d.text}</strong><br>${regionKey}`))
           .on("mousemove", e => tooltip.style("top", (e.pageY - 35) + "px").style("left", (e.pageX + 10) + "px"))
           .on("mouseout", () => tooltip.style("visibility", "hidden"));
-      }
+
+        //--------------------------------------------------
+        // 🏷️ Direct Circle Labels (Critics / Audience)
+        //--------------------------------------------------
+        svg.append("text")
+          .attr("x", centers.critic.x)
+          .attr("y", centers.critic.y + unifiedR + 40)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "20px")
+          .attr("font-weight", "bold")
+          .attr("fill", "#1f77b4")
+          .text("Critics");
+
+        svg.append("text")
+          .attr("x", centers.audience.x)
+          .attr("y", centers.critic.y + unifiedR + 40)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "20px")
+          .attr("font-weight", "bold")
+          .attr("fill", "#e74c3c")
+          .text("Audience");
+
+      
+        }
 
       //--------------------------------------------------
       // Draw words & region circles (unchanged)
@@ -1072,8 +1095,9 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
         .attr("fill", "#d62728")
         .attr("fill-opacity", 0.35)
         .style("mix-blend-mode", "multiply");
-    }
+      }
 
+    
     //--------------------------------------------------
     // Initial draw + slider listener
     //--------------------------------------------------
