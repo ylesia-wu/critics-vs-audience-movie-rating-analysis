@@ -1,168 +1,418 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <title>Critics vs Audience: The Double Twist Story</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+  <meta charset="utf-8">
+  <title>Critics vs Audience: The Double Twist Story</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 
 <body>
-    <div id="container">
+  <div id="container">
 
-        <!-- PAGE 1: Title Page -->
-        <section class="page" id="page1">
-            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; text-align:center;">
-                <h1 style="font-size:3rem; margin-bottom:20px;">Critics vs Audience</h1>
-                <h2 style="font-size:1.8rem; font-weight:400; color:#555;">The Double Twist Story</h2>
-                <p class="section-desc" style="max-width:600px; margin-top:40px;">
-                    Explore how movie critics and audiences agree — or clash — when it comes to rating the same films.
-                    Dive into data, visualizations, and surprises along the way.
-                </p>
-                <button class="load-more" onclick="showNextPage(2, this)" style="margin-top:60px;">Start the Journey ↓</button>
+    <!-- PAGE 1: Title Page -->
+<section class="page" id="page1">
+  <div
+    style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; text-align:center;">
+    <h1 style="font-size:3rem; margin-bottom:20px;">Critics vs Audience</h1>
+    <h2 style="font-size:1.8rem; font-weight:400; color:#555;">The Double Twist Story</h2>
+
+    <p class="section-desc" style="max-width:600px; margin-top:40px;">
+      Explore how movie critics and audiences agree or clash when it comes to rating the same films.
+      Dive into data, visualizations, and surprises along the way.
+    </p>
+
+    <p style="max-width:650px; margin-top:25px; color:#666;">
+      We often hear that critics and audiences never see eye to eye —
+      that critics love “artsy” films, while audiences prefer blockbusters.<br><br>
+      But how true is that story?<br>
+      Let’s find out together.
+    </p>
+
+    <button class="load-more" onclick="showNextPage(2, this)" style="margin-top:60px;">Start the Journey ↓</button>
+  </div>
+</section>
+
+
+    <!-- PAGE 2: Guessing Game -->
+<section class="page hidden" id="page2">
+  <h1>Critics vs Audience: Guess the Score!</h1>
+  <p>
+    Let’s start with a little game! You’ll see either the <strong>Audience Score</strong>
+    or the <strong>Critic Score</strong> for a movie.
+    Your task: guess the missing score. Ready?
+  </p>
+
+  <div id="guessing-game"></div>
+
+  <button class="load-more" onclick="showNextPage(3, this)">Load More ↓</button>
+</section>
+
+
+    <!-- PAGE 3: Outliers -->
+<section class="page hidden" id="page3">
+  <h2>Wait... Not Always! Some Movies Break the Pattern</h2>
+
+  <p class="section-desc">
+    While many movies share similar Critics and Audience scores, a few divide opinions sharply.
+    Let’s explore some famous examples where love and hate collide.
+  </p>
+
+  <div id="outlier-examples"></div>
+
+  <p style="margin-top:25px;">
+    <strong>Star Wars: The Last Jedi (2017)</strong><br>
+    Critics praised its bold storytelling and artistic risks.<br>
+    Audiences felt it betrayed the saga’s legacy and beloved characters.
+  </p>
+
+  <p style="margin-top:15px;">
+    These significant gaps remind us that ratings are not always aligned.<br>
+    Critics often value innovation, theme, and craftsmanship <br>
+    <A></A>udiences focus more on story, emotion, and enjoyment.
+  </p>
+
+  <p style="margin-top:25px;">
+    But how often do such disagreements actually occur?<br>
+    Let’s examine the data.
+  </p>
+
+  <button class="load-more" onclick="showNextPage(4, this)">Load More ↓</button>
+</section>
+
+
+    <!-- PAGE 4: Venn -->
+    <section class="page hidden" id="page4">
+      <h2 id="venn-title" style="margin-top:60px;">Top 50 Movies: Critic vs Audience</h2>
+      
+      <p class="section-desc">
+        Look closer: critics and audiences often disagree.
+        Here’s an interactive view of how their top-rated movies overlap.
+        Use the slider to choose the number of top films — from 15 to 200.
+      </p>
+
+      <p style="max-width:650px; margin-bottom:20px;">
+        Move the slider to explore different ranges.
+        The overlap area shows movies that both sides ranked among their top picks.
+      </p>
+      <div class="chart-container" style="flex-direction:column;align-items:center;">
+        <div id="venn-controls" style="margin-bottom:20px;">
+          <label for="topNRange">Number of Movies:</label>
+          <input type="range" id="topNRange" min="15" max="200" value="50" step="5">
+          <span id="topNValue">50</span>
+        </div>
+        <div id="venn"></div>
+      </div>
+
+      <p style="margin-top:25px; max-width:650px;">
+        From Top 15 to Top 80, only <strong>one</strong> movie appears in both lists:
+        Days and Nights in the Forest.<br>
+        The second overlap doesn’t show up until Top 85:
+        Folklore: The Long Pond Studio Sessions.<br>
+
+        This striking lack of overlap shows that critics and audiences often celebrate
+        very different films at the extremes.
+      </p>
+      
+      <p style="margin-top:20px;" class="section-desc">
+        But what about the big picture?
+        Do their tastes move together over time?
+      </p>
+
+      <button class="load-more" onclick="showNextPage(5, this)">Load More ↓</button>
+    </section>
+
+    <!-- PAGE 5: Critics & Audiences Alignment Dashboard -->
+        <section class="page hidden" id="page5" style="background-color:#eef2f5; padding:60px 0;">
+            <div style="max-width:1150px; margin:auto; font-family:'Inter', sans-serif;">
+
+                <!-- 🧭 标题区 -->
+                <h2 style="font-size:2.3rem; font-weight:800; text-align:left; margin-bottom:10px;">
+                    A CLOSER LOOK: CRITICS AND AUDIENCES
+                </h2>
+                <p style="font-size:1.05rem; color:#333; margin-bottom:40px; max-width:850px;">
+                    While it’s common to assume critics and audiences are at odds, the data tells a more nuanced story.
+                    Across decades and genres, both groups show surprisingly strong alignment — from long-term trends
+                    to specific movie types. Let’s explore how.
+                </p >
+
+                <!-- 🧩 图表布局容器 -->
+                <div style="display:grid; grid-template-columns:2fr 1fr; gap:40px; align-items:start;">
+
+                    <!-- 📊 左侧：三张图 -->
+                    <div>
+
+                        <!-- 1️⃣ 折线图：时间趋势 -->
+                        <div class="chart-section" style="margin-bottom:60px;">
+                            <h3 style="font-weight:700; font-size:1.2rem; margin-bottom:8px;">
+                                Average Ratings Over Time
+                            </h3>
+                            <p style="font-size:0.95rem; color:#555; margin-bottom:15px;">
+                                Over the past century, critics’ and audiences’ scores have moved almost in sync —
+                                reflecting similar shifts in how films are received and valued through different eras.
+                            </p >
+                            <div id="chart-q2"></div>
+                        </div>
+
+                        <!-- 2️⃣ Bar Chart：类型差异 + 3️⃣ Scatter Plot：类型内一致性 -->
+                        <div class="chart-row" style="
+                                display:flex;
+                                justify-content:center;
+                                align-items:flex-start;
+                                gap:40px;
+                                flex-wrap:nowrap;
+                                max-width:1200px;
+                                margin:0 auto;
+                             ">
+
+                            <!-- 🎬 左侧：类型差异 -->
+                            <div class="chart-section" style="
+                                    flex:1;
+                                    min-width:480px;
+                                    max-width:600px;
+                                    background:white;
+                                    border-radius:10px;
+                                    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+                                    padding:25px;
+                                    overflow:hidden;
+                                 ">
+                                <h3 style="font-weight:700; font-size:1.2rem; margin-bottom:8px;text-align:center;">
+                                    Genre-Level Differences
+                                </h3>
+                                <p style="font-size:0.95rem; color:#555; margin-bottom:15px;">
+                                    Some genres do stand out: critics tend to favor <strong>Animation</strong> and
+                                    <strong>Comedy</strong>, while audiences lean slightly toward
+                                    <strong>Fantasy</strong> and <strong>Musicals</strong>.
+                                    Still, most differences remain within just a few percentage points.
+                                </p >
+                                <div id="chart-q1"></div>
+                            </div>
+
+                            <!-- 📊 右侧：类型内一致性 -->
+                            <div class="chart-section" style="
+                                    flex:1;
+                                    min-width:480px;
+                                    max-width:600px;
+                                    background:white;
+                                    border-radius:10px;
+                                    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+                                    padding:25px;
+                                 ">
+                                <h3 style="font-weight:700; font-size:1.2rem; margin-bottom:8px;text-align:center;">
+                                    Within-Genre Agreement
+                                </h3>
+                                <p style="font-size:0.95rem; color:#555; margin-bottom:15px;">
+                                    When we zoom into specific genres, most movies cluster near the diagonal —
+                                    meaning critics and audiences largely agree on what’s good or bad.
+                                    Click a bar above to explore each genre interactively.
+                                </p >
+                                <div id="chart-scatter-multi"></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    
+                </div>
+                
+                <div class="takeaways-box">
+                  <h3>Key Takeaways</h3>
+                  <p>
+                    ✅ Over time, both critics and audiences have displayed
+                    <strong>parallel rating trends</strong>,
+                    especially after 1980 when access to films became more democratized.<br><br>
+                
+                    🎬 Across genres, the <strong>average difference rarely exceeds 5%</strong>,
+                    suggesting that disagreement is the exception, not the rule.<br><br>
+                
+                    💡 Within most genres, data points cluster tightly around the equality line —
+                    a visual proof that both groups share a <strong>common sense of quality</strong>
+                    more often than popular narratives suggest.
+                  </p>
+                </div>
+
+                <button class="load-more" onclick="showNextPage(6, this)" style="margin-top:30px;">Load More ↓</button>
             </div>
         </section>
 
-        <!-- PAGE 2: Guessing Game -->
-        <section class="page hidden" id="page2">
-            <h1>Are They Really That Different?</h1>
-            <p class="section-desc">
-                Let’s start with a guessing game! You’ll see a movie poster and one score (Critics or Audience).
-                Can you guess the other score using the slider?
-            </p>
-            <p>TODO: guessing game movie 1</p>
-            <p>TODO: guessing game movie 2</p>
-            <p>TODO: guessing game movie 3</p>
-            <div id="guessing-game-container">
-                <!-- 🧩 JS will render guessing game (poster + slider + reveal) -->
+        
+    <!-- PAGE 6: Oscar 
+    <section class="page hidden" id="page6">
+    <h2>Oscar!!</h2>
+ 
+    <p class="section-desc">
+      This section will explore how Oscar-winning movies fit into the Critics vs Audience story.
+      Do awards always reflect popular taste — or are they critics’ darlings?
+    </p>
+    <button class="load-more" onclick="showNextPage(7, this)">Load More ↓</button>
+    </section>-->
+
+    <!-- PAGE 7: Conclusion -->
+    <section class="page hidden" id="page6">
+    <h2>So... Who Should You Trust?</h2>
+  <p class="section-desc">
+    After exploring data across thousands of films, genres, and decades, here’s what we found:
+    Critics and audiences are more aligned than they might seem.
+    You can trust both — they usually agree on what’s good.
+  </p>
+  
+  <p style="margin-top:20px;">
+    Now it's your turn! Use the interactive tool below to explore movies based on genre, score, timeline, and vote counts.
+    The distributions and movie bubbles update automatically as you adjust the filters.
+    Hover over a movie to see details — and export the filtered set as a CSV for deeper analysis.
+  </p>
+    <button class="load-more" onclick="showNextPage(7, this)">Load More ↓</button>
+    </section>
+
+    <!-- PAGE 8: Recommendation Tool -->
+<section class="page hidden" id="page7">
+  <div id="recommendation-tool-container">
+    <div id="rec-dashboard" style="background:#fafafa; padding:0;">
+      <div class="topbar">
+        <div class="title">Movie Recommendation Explorer</div>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div>
+            <label class="smalllabel">Genre</label>
+            <select id="genre" class="selector"><option>All</option></select>
+          </div>
+          <div>
+            <label class="smalllabel">Top N</label>
+            <select id="topN" class="selector">
+              <option value="5">Top 5</option>
+              <option value="10" selected>Top 10</option>
+              <option value="30">Top 30</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="layout">
+        <div class="col-left">
+          <div class="card">
+            <div class="smalllabel">Vote distribution</div>
+            <svg id="voteSvg" width="140" height="420"></svg>
+          </div>
+        </div>
+
+        <div class="col-center">
+          <div style="display:flex;gap:12px;">
+            <div class="card" style="flex:1;">
+              <div class="smalllabel">Critic score distribution</div>
+              <svg id="criticSvg" width="420" height="140"></svg>
             </div>
-            <button class="load-more" onclick="showNextPage(3, this)">Load More ↓</button>
-        </section>
-
-        <!-- PAGE 3: Surprising Outliers -->
-        <section class="page hidden" id="page3">
-            <h2>Wait... Not Always! Some Movies Break the Pattern</h2>
-            <p class="section-desc">
-                While many movies have similar Critics and Audience scores, some famous films divide opinions sharply —
-                like <strong>Joker</strong> or <strong>The Last Jedi</strong>.
-            </p>
-            <div id="outlier-examples">
-                <!-- Example posters + their score differences -->
+            <div class="card" style="flex:1;">
+              <div class="smalllabel">Audience score distribution</div>
+              <svg id="audienceSvg" width="420" height="140"></svg>
             </div>
-            <button class="load-more" onclick="showNextPage(4, this)">Load More ↓</button>
-        </section>
+          </div>
 
-        <!-- PAGE 4: Evidence of Disagreement -->
-        <section class="page hidden" id="page4">
-            <h2>Look Closer: Critics and Audiences Often Disagree</h2>
-            <p class="section-desc">First, by genre: some categories show big differences.</p>
-            <div class="chart-container">
-                <div id="chart-q1"></div> <!-- Genre difference chart -->
+          <div class="card" style="flex:1;">
+            <div class="smalllabel">Timeline (release year)</div>
+            <svg id="timeline" width="1000" height="420"></svg>
+            <div class="legend" style="margin-top:6px;">
+              Bubble size = avg(critic,audience). X = release year.
             </div>
+          </div>
+        </div>
 
-            <p class="section-desc">Even their top 30 favorite movies barely overlap.</p>
-            <div class="chart-container">
-                <div id="chart-q5"></div> <!-- Venn diagram -->
-            </div>
+        <div class="col-right">
+          <div class="card">
+            <div class="smalllabel">Filters summary</div>
+            <div style="margin-top:8px">Votes: <span id="voteSummary" class="num">All</span></div>
+            <div style="margin-top:8px">Critic: <span id="critSummary" class="num">All</span></div>
+            <div style="margin-top:8px">Audience: <span id="audSummary" class="num">All</span></div>
+          </div>
 
-            <h2>Top 50: Critic vs Audience</h2>
-            <p class="section-desc">A word-cloud style Venn showing the top 50 movies preferred by each group.</p>
-            <div class="chart-container">
-                <div id="venn"></div>
-            </div>
+          <div class="card" style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div class="smalllabel">Counts (filtered)</div>
+            <div id="counts" class="counts">—</div>
+            <button id="exportBtn" class="export-btn">Export filtered CSV</button>
+          </div>
+        </div>
+      </div>
 
-            <button class="load-more" onclick="showNextPage(5, this)">Load More ↓</button>
-        </section>
-
-        <!-- PAGE 5: Main Message -->
-        <section class="page hidden" id="page5">
-            <h2>They’re More Aligned Than You Think</h2>
-            <p class="section-desc">
-                Across thousands of movies and decades of data, the overall correlation between Critics and Audiences
-                remains strong — especially in recent years.
-            </p>
-            <div class="chart-container">
-                <div id="chart-q2"></div> <!-- Avg Scores Over Time -->
-            </div>
-            <p>TODO: Oscar visualization</p>
-            <button class="load-more" onclick="showNextPage(6, this)">Load More ↓</button>
-        </section>
-
-        <!-- PAGE 6: Solution & Recommendation -->
-        <section class="page hidden" id="page6">
-            <h2>So... Who Should You Trust?</h2>
-            <p class="section-desc">
-                Turns out, you can trust both. Critics and audiences usually agree on what’s good.
-                Let’s find some movies both groups love!
-            </p>
-            <div id="recommendation-tool"></div>
-            <p>TODO: interactive recommendation tool </p>
-            <p class="footer-note">Created by Team Yilin Jiang, Ylesia Wu, Mingjiao Diao</p>
-
-            <!-- ✅ Back to Top Button -->
-            <div style="text-align:center; margin-top:40px;">
-                <button id="reset-btn" class="load-more">Back to Top ↑</button>
-            </div>
-        </section>
+      <div class="bottom-fixed">
+        <div class="detail">
+          <div style="font-weight:700">Hovered movie details</div>
+          <div id="detailContent" style="margin-top:8px;color:#333"></div>
+        </div>
+        <div class="table-area">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <div style="font-weight:700">Top N</div>
+            <div style="font-size:12px;color:#666">rank = avg(critic,audience)</div>
+          </div>
+          <div id="tableWrap"></div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <div class="tooltip" id="tooltip"></div>
+    <p class="section-desc">
+      That’s it — you’ve uncovered the double twist:
+      Critics and audiences aren’t rivals.
+      They’re partners in shaping what great cinema means.
+      Whether you trust critics, audiences, or your own heart —
+      the story of movies is one we all write together.
+    </p>
 
-    <script>
-        // ------------------------------
-        // Handle "Load More" transitions
-        // ------------------------------
-        function showNextPage(pageNumber, button) {
-            const nextPage = document.getElementById(`page${pageNumber}`);
-            if (nextPage) {
-                nextPage.classList.remove("hidden");
-                if (button) button.style.display = "none";
-                nextPage.scrollIntoView({ behavior: "smooth" });
-                localStorage.setItem("lastPage", pageNumber);
-            }
-        }
+  <p class="footer-note">Created by Team Yilin Jiang, Ylesia Wu, Mingjiao Diao</p>
+  <div style="text-align:center; margin-top:40px;">
+    <button id="reset-btn" class="load-more">Back to Top ↑</button>
+  </div>
+</section>
 
-        // ------------------------------
-        // Restore state on page load
-        // ------------------------------
-        window.addEventListener("load", () => {
-            const lastPage = parseInt(localStorage.getItem("lastPage")) || 1;
-            for (let i = 2; i <= lastPage; i++) {
-                const section = document.getElementById(`page${i}`);
-                if (section) {
-                    section.classList.remove("hidden");
-                    const prevBtn = document.querySelector(`#page${i - 1} .load-more`);
-                    if (prevBtn) prevBtn.style.display = "none";
-                }
-            }
-            document.getElementById(`page${lastPage}`)?.scrollIntoView({ behavior: "instant" });
-        });
 
-        // ------------------------------
-        // Reset / Back to Top logic
-        // ------------------------------
-        document.addEventListener("DOMContentLoaded", () => {
-            const resetBtn = document.getElementById("reset-btn");
-            resetBtn.addEventListener("click", () => {
-                localStorage.removeItem("lastPage");
+  </div>
 
-                const pages = document.querySelectorAll(".page");
-                pages.forEach((p, i) => {
-                    if (i === 0) p.classList.remove("hidden");
-                    else p.classList.add("hidden");
-                });
+  <div class="tooltip" id="tooltip"></div>
 
-                document.querySelectorAll(".load-more").forEach(btn => {
-                    btn.style.display = "block";
-                });
+  <script>
+    function showNextPage(next, btn) {
+      // hide current page (if triggered from a button inside it)
+      const current = btn && btn.closest(".page");
+      if (current) current.classList.add("hidden");
 
-                document.getElementById("page1").scrollIntoView({ behavior: "smooth" });
-            });
-        });
-    </script>
+      // show target page
+      const nextPage = document.getElementById(`page${next}`);
+      if (nextPage) {
+        nextPage.classList.remove("hidden");
+        nextPage.scrollIntoView({ behavior: "smooth" });
+      }
+    }
 
-    <script src="script.js"></script>
+
+    window.addEventListener("load", () => {
+      const lastPage = parseInt(localStorage.getItem("lastPage")) || 1;
+      for (let i = 2; i <= lastPage; i++) {
+        document.getElementById(`page${i}`)?.classList.remove("hidden");
+        document.querySelector(`#page${i - 1} .load-more`)?.style.setProperty("display", "none");
+      }
+      document.getElementById(`page${lastPage}`)?.scrollIntoView({ behavior: "instant" });
+      if (lastPage >= 8) initMovieRecommendationTool();
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+    const resetBtn = document.getElementById("reset-btn");
+
+    resetBtn?.addEventListener("click", () => {
+      // Hide all sections except Page 1
+      document.querySelectorAll(".page").forEach((page, i) => {
+        page.classList.toggle("hidden", i !== 0);
+      });
+
+      // Re-show all "Load More" buttons
+      document.querySelectorAll(".load-more").forEach(btn => {
+        btn.style.display = "block";
+      });
+
+      // Scroll smoothly to the top of the page
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+  </script>
+
+
+
+  <script src="script.js"></script>
 </body>
-
 </html>

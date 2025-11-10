@@ -1,92 +1,580 @@
-/* body {
-    font-family: Arial, sans-serif;
-    margin: 30px;
-}
-
-h2 {
-    text-align: center;
-    margin-top: 40px;
-}
-
-.chart-container {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 60px;
-}
-
-.tooltip {
-    position: absolute;
-    padding: 6px 10px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    border-radius: 5px;
-    font-size: 12px;
-    visibility: hidden;
-} */
-
-
+/* ========================================================= */
+/*  🌟 Global Styles for Critics vs Audience Visualization   */
+/* ========================================================= */
 
 body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #fdfdfd;
-    color: #222;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #fdfdfd;
+  color: #222;
 }
 
 h1,
 h2 {
-    text-align: center;
-    margin-top: 50px;
+  text-align: center;
+  margin-top: 50px;
 }
 
 .section-desc {
-    text-align: center;
-    max-width: 700px;
-    margin: 20px auto 40px auto;
-    font-size: 16px;
-    line-height: 1.5;
-    color: #444;
+  text-align: center;
+  max-width: 700px;
+  margin: 20px auto 40px auto;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #444;
 }
 
 .chart-container {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 60px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 60px;
 }
 
 .page {
-    min-height: 100vh;
-    padding: 40px 20px;
-    opacity: 1;
-    transition: opacity 0.6s ease;
+  min-height: 100vh;
+  padding: 40px 20px;
+  opacity: 1;
+  transition: opacity 0.6s ease;
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 .load-more {
-    display: block;
-    margin: 40px auto;
-    padding: 10px 20px;
-    border: none;
-    background-color: #444;
-    color: white;
-    font-size: 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease;
+  display: block;
+  margin: 40px auto;
+  padding: 10px 20px;
+  border: none;
+  background-color: #444;
+  color: white;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
 .load-more:hover {
-    background-color: #222;
+  background-color: #222;
 }
 
 .footer-note {
-    text-align: center;
-    margin-top: 60px;
-    color: #777;
-    font-size: 14px;
+  text-align: center;
+  margin-top: 60px;
+  color: #777;
+  font-size: 14px;
+}
+
+/* -------------------------------------------- */
+/* 🎮 Guessing Game Section                    */
+/* -------------------------------------------- */
+
+#guessing-game {
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  width: 80%;
+}
+
+.game-instance {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 25px;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  text-align: center;
+}
+
+.poster {
+  width: 200px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.score-display {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.slider-container {
+  margin: 20px auto 25px auto;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.score-slider {
+  width: 80%;
+  height: 10px;
+  margin: 10px 0;
+}
+
+.slider-value {
+  font-size: 15px;
+  margin-top: 5px;
+}
+
+.guess-result {
+  margin-top: 15px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.next-round-btn {
+  margin-top: 25px;
+  background-color: #2c3e50;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background 0.2s ease;
+}
+
+.next-round-btn:hover {
+  background-color: #34495e;
+}
+
+/* ⚫ Minimal Black Slider */
+.score-slider {
+  -webkit-appearance: none;
+  width: 80%;
+  height: 8px;
+  border-radius: 4px;
+  background: #000;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Thumb */
+.score-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #000;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.score-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.score-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #000;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.score-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
+/* -------------------------------------------- */
+/* 🟣 Venn Top N Control                        */
+/* -------------------------------------------- */
+
+#venn-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #333;
+}
+
+#topNRange {
+  width: 250px;
+  accent-color: #444;
+  cursor: pointer;
+}
+
+#topNValue {
+  font-weight: bold;
+  font-size: 17px;
+  color: #222;
+}
+
+/* ========================================================= */
+/*  🎬 Movie Recommendation Explorer (Page 7 Dashboard)       */
+/* ========================================================= */
+
+#page7,
+#page7 body {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  background: #fafafa;
+  color: #111;
+}
+
+/* 顶部栏 */
+.topbar {
+  padding: 12px 18px;
+  border-bottom: 1px solid #e6e6e6;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* 主体布局 */
+.layout {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  height: calc(100vh - 150px);
+  box-sizing: border-box;
+}
+
+.col-left {
+  width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.col-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.col-right {
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 通用卡片样式 */
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.smalllabel {
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.num {
+  font-weight: 700;
+  color: #0b64c7;
+}
+
+.selector {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  width: 100%;
+}
+
+.export-btn {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: none;
+  background: #1e88e5;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+
+.export-btn:hover {
+  background: #1565c0;
+}
+
+.bottom-fixed {
+  position: relative;
+  background: #fff;
+  border-top: 1px solid #eee;
+  padding: 12px 18px;
+  display: flex;
+  gap: 12px;
+  height: 220px;
+  box-sizing: border-box;
+  margin-top: 40px;
+}
+
+.detail {
+  width: 420px;
+  overflow: auto;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 10px;
+  background: #fafafa;
+}
+
+.table-area {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 8px;
+  background: white;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th,
+td {
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+th {
+  background: #fafafa;
+  position: sticky;
+  top: 0;
+}
+
+.counts {
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+}
+
+.legend {
+  font-size: 12px;
+  color: #666;
+}
+
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: white;
+  padding: 8px;
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  border: 1px solid #eee;
+  font-size: 13px;
+}
+
+.bottom-spacer {
+  height: 0px;
+}
+
+#chart-q1 svg,
+#chart-scatter-multi svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* ========================================================= */
+/* 🎬 Movie Recommendation Explorer (Page 8 Dashboard)        */
+/* ========================================================= */
+
+#recommendation-tool-container,
+#recommendation-tool-container body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #fafafa;
+  color: #111;
+}
+
+/* ---------- Topbar ---------- */
+#recommendation-tool-container .topbar {
+  padding: 12px 18px;
+  border-bottom: 1px solid #e6e6e6;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#recommendation-tool-container .title {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* ---------- Layout ---------- */
+#recommendation-tool-container .layout {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+#recommendation-tool-container .col-left {
+  width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#recommendation-tool-container .col-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 600px;
+}
+
+#recommendation-tool-container .col-right {
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---------- Cards & General ---------- */
+#recommendation-tool-container .card {
+  background: white;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+#recommendation-tool-container svg {
+  display: block;
+  width: 100%;
+}
+
+#recommendation-tool-container .smalllabel {
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+#recommendation-tool-container .num {
+  font-weight: 700;
+  color: #0b64c7;
+}
+
+#recommendation-tool-container .selector {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  width: 100%;
+}
+
+#recommendation-tool-container .export-btn {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: none;
+  background: #1e88e5;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+
+#recommendation-tool-container .export-btn:hover {
+  background: #1976d2;
+}
+
+/* ---------- Bottom panel (now scrolls normally) ---------- */
+#recommendation-tool-container .bottom-fixed {
+  position: static;          /* no longer fixed */
+  background: #fff;
+  border-top: 1px solid #eee;
+  padding: 12px 18px;
+  display: flex;
+  gap: 12px;
+  height: auto;
+  box-sizing: border-box;
+  margin-top: 40px;
+}
+
+#recommendation-tool-container .detail {
+  width: 420px;
+  overflow: auto;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 10px;
+  background: #fafafa;
+}
+
+#recommendation-tool-container .table-area {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 8px;
+  background: white;
+}
+
+/* ---------- Table ---------- */
+#recommendation-tool-container table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+#recommendation-tool-container th,
+#recommendation-tool-container td {
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+#recommendation-tool-container th {
+  background: #fafafa;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+#recommendation-tool-container .counts {
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+}
+
+#recommendation-tool-container .legend {
+  font-size: 12px;
+  color: #666;
+}
+
+/* ---------- Tooltip ---------- */
+#recommendation-tool-container .tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: white;
+  padding: 8px;
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  border: 1px solid #eee;
+  font-size: 13px;
+  z-index: 10;
+}
+
+/* ---------- Spacer (if needed for scroll padding) ---------- */
+#recommendation-tool-container .bottom-spacer {
+  height: 60px;
 }
 
