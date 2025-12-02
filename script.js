@@ -2185,7 +2185,10 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener('DOMContentLoaded', function () {
   // Animate bars when page becomes visible
   function animateDivergentBars() {
-    const page4 = document.getElementById('page4').scrollIntoView({ behavior: "smooth" });
+    const page4 = document.getElementById('page4');
+// Optional: Smooth scroll (but do NOT assign it!)
+page4.scrollIntoView({ behavior: "smooth" });
+
     if (!page4 || page4.classList.contains('hidden')) return;
 
     const barFills = page4.querySelectorAll('.bar-fill');
