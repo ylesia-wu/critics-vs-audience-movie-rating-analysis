@@ -8,7 +8,7 @@ Check out the interactive visualization website [here](https://ylesia-wu.github.
 
 The data is already processed and stored inside the [data](data) folder. 
 
-You can also run our [data-processing and EDA notebook](final_project.ipynb) instead. Required packages are listed inside [requirements.txt](requirements.txt)
+You can also run our [data-processing and EDA notebook](data_processing/data_processing_EDA.ipynb) instead. Required packages are listed inside [requirements.txt](data_processing/requirements.txt).
 
 ## Visualization Codebase
 
