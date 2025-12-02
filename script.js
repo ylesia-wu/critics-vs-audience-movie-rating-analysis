@@ -54,7 +54,17 @@ function showNextPage(next, btn) {
   if (nextPage) {
     nextPage.classList.remove("hidden");
     nextPage.style.display = "block";
-    nextPage.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+    
+    // Force scroll to top of the page before smooth scroll
+    requestAnimationFrame(() => {
+      const pageTop = nextPage.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({ 
+        top: pageTop, 
+        behavior: "smooth", 
+        block: "start" 
+      });
+    });
+    
     localStorage.setItem("lastPage", String(next));
   }
   if (btn) btn.style.display = "none";
