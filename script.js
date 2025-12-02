@@ -2196,8 +2196,10 @@ document.addEventListener('DOMContentLoaded', function () {
   // Animate bars when page becomes visible
   function animateDivergentBars() {
     const page4 = document.getElementById('page4');
-// Optional: Smooth scroll (but do NOT assign it!)
-page4.scrollIntoView({ behavior: "smooth" });
+
+    // removed the scrollIntoView call so it doesn't hijack scroll
+    // previously:
+    // page4.scrollIntoView({ behavior: "smooth" });
 
     if (!page4 || page4.classList.contains('hidden')) return;
 
@@ -2250,6 +2252,7 @@ page4.scrollIntoView({ behavior: "smooth" });
     });
   });
 });
+
 
 // Only show bottom-fixed when page9 is in viewport
 function updateBottomFixed() {
