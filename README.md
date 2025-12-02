@@ -12,7 +12,7 @@ You can also run our [data-processing and EDA notebook](data_processing/data_pro
 
 ## Visualization Codebase
 
-The codebase for our visualization website consists of 3 files:
+The codebase for our visualization website consists of 3 main files alongside other assets:
 - [index.html](index.html)
 - [script.js](script.js)
 - [style.css](style.css)
