@@ -6,15 +6,15 @@ Check out the interactive visualization website [here](https://ylesia-wu.github.
 
 ## Dataset
 
-The data is already processed and stored inside the `data` folder. 
+The data is already processed and stored inside the [data](data) folder. 
 
-You can also run our data-processing and EDA notebook instead. Required packages are listed inside [requirements.txt](/requirements.txt)
+You can also run our [data-processing and EDA notebook](final_project.ipynb) instead. Required packages are listed inside [requirements.txt](requirements.txt)
 
 ## Visualization Codebase
 
 The codebase for our visualization website consists of 3 files:
-- [index.html](/index.html)
-- [script.js](/script.js)
-- [style.css](/style.css)
+- [index.html](index.html)
+- [script.js](script.js)
+- [style.css](style.css)
 
 To run the visualization locally, from the project root, run `python -m http.server 8000` in your terminal, then open http://localhost:8000/index.html in your browser.
