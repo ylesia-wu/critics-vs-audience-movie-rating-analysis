@@ -1,6 +1,6 @@
 # Critics vs Audience: Movie Rating Analysis
 
-Welcome to our project that explores Rotten Tomatoes movie ratings and how critics' and audiences' opinions differ or align!
+Welcome to our project that explores **Rotten Tomatoes movie ratings** and how critics' and audiences' opinions differ or align!
 
 Check out the interactive visualization website [here](https://ylesia-wu.github.io/critics-vs-audience-movie-rating-analysis/).
 
