@@ -13,10 +13,10 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 
-<!-- 🔵 Vertical Page Navigation Dots -->
-<div id="page-nav-dots"></div>
-
 <body>
+  <!-- 🔵 Vertical Page Navigation Dots -->
+  <div id="page-nav-dots"></div>
+
   <div id="container">
 
     <!-- PAGE 1: Title Page -->
@@ -24,10 +24,13 @@
       <div class="film-grain"></div>
       <div
         style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; text-align:center; position:relative; z-index:2;">
-        <h1 style="font-size:4rem; margin-bottom:15px; text-shadow: 3px 3px 6px rgba(0,0,0,0.3);">Critics vs Audience
+        <h1 style="font-size:4rem; margin-bottom:15px; text-shadow: 3px 3px 6px rgba(0,0,0,0.3);">
+          Critics vs Audience
         </h1>
         <div class="film-strip-divider"></div>
-        <h2 style="font-size:2rem; font-weight:400; color:#8B4513; font-style:italic;">Exploring Movie Ratings from Both Sides</h2>
+        <h2 style="font-size:2rem; font-weight:400; color:#8B4513; font-style:italic;">
+          Exploring Movie Ratings from Both Sides
+        </h2>
 
         <p class="section-desc" style="max-width:600px; margin-top:50px;">
           A visual journey through how critics and audiences respond to the same films.
@@ -40,242 +43,364 @@
       </div>
     </section>
 
-    <!-- PAGE 2: Guessing Game -->
+    <!-- PAGE 2: Rotten Tomatoes Intro -->
     <section class="page hidden" id="page2">
+      <div class="film-grain"></div>
+
+      <div class="page-header">
+        <h1>How Rotten Tomatoes Scores Work</h1>
+        <div class="film-strip-divider"></div>
+      </div>
+
+      <div class="rt-intro-card">
+        <!-- Interactive top row -->
+        <div class="rt-top-row">
+          <!-- Critic pill -->
+          <div class="rt-pill rt-pill-critic" data-type="critic">
+            <span class="rt-emoji">🍅</span>
+            <div class="rt-pill-text default-text">
+              <div class="rt-pill-title">Tomatometer</div>
+              <div class="rt-pill-subtitle">Critic Score</div>
+            </div>
+            <div class="rt-pill-text expanded-text" style="display:none;">
+              <div class="rt-pill-explainer">
+                The percentage of Approved Tomatometer Critics who have given this movie a positive review.
+              </div>
+            </div>
+          </div>
+
+          <!-- Audience pill -->
+          <div class="rt-pill rt-pill-audience" data-type="audience">
+            <span class="rt-emoji">🍿</span>
+            <div class="rt-pill-text default-text">
+              <div class="rt-pill-title">Popcornmeter</div>
+              <div class="rt-pill-subtitle">Audience Score</div>
+            </div>
+            <div class="rt-pill-text expanded-text" style="display:none;">
+              <div class="rt-pill-explainer">
+                The percentage of users who made a verified movie ticket purchase rating this 3.5 stars or higher.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="rt-scale-text">Rotten Tomatoes is a widely used review aggregator that compiles movie and TV ratings
+          from critics and audiences.</p>
+
+        <div class="rt-examples">
+          <div class="rt-example-buttons">
+            <button class="rt-example-btn active" data-example="a">
+              Example A · 99% Tomatometer
+            </button>
+            <button class="rt-example-btn" data-example="b">
+              Example B · 50% Popcornmeter
+            </button>
+          </div>
+          <div class="rt-example-panel" id="rt-example-panel"></div>
+        </div>
+
+        <p class="rt-scale-text">
+          We rescale both critics and audience scores to a simple
+          0–1 range or 0–100% range of people who liked the movie,
+          instead of averaging 0–5 star ratings.
+        </p>
+
+        <button class="load-more vintage-button" onclick="showNextPage(3, this)" style="margin-top:25px;">
+          <span class="button-film-strip"></span>
+          Start the Game ↓
+        </button>
+      </div>
+    </section>
+
+    <!-- PAGE 3: Guessing Game -->
+    <section class="page hidden" id="page3">
       <div class="film-grain"></div>
       <div class="page-header">
         <h1>Critics vs Audience: Guess the Score!</h1>
         <div class="film-strip-divider"></div>
       </div>
       <p class="intro-text">
-        Let's start with a little game! You'll see either the <strong>Audience Score</strong>
-        or the <strong>Critic Score</strong> for a movie.
-        Your goal is to guess the missing score. Ready?
+        Now that we know what the scores mean, let's play a quick game.
+        You’ll see either the <strong>Audience Score</strong> or the <strong>Critic Score</strong>
+        for a movie, and your goal is to guess the missing one.
       </p>
 
       <div id="guessing-carousel"></div>
 
-      <button class="load-more vintage-button hidden" id="carousel-next-btn" onclick="showNextPage(3, this)">
+      <p class="game-hint" style="margin-top:20px;margin-bottom:6px;font-size:13px;color:#8B4513;text-align:center;">
+        We have 5 movies for you to guess — try them all before moving on!
+      </p>
+
+      <button class="load-more vintage-button hidden" id="carousel-next-btn" onclick="showNextPage(4, this)">
         <span class="button-film-strip"></span>
         Load More ↓
       </button>
     </section>
 
 
-    <!-- PAGE 3: Outliers -->
-    <section class="page hidden" id="page3">
-      <div class="film-grain"></div>
-      <div class="page-header">
-        <h1>Sometimes the Opinions Diverge</h1>
-        <div class="film-strip-divider"></div>
-      </div>
-      <p class="section-desc">
-        From the guessing game, we saw that some movies land similarly with both groups while others drift apart.
-        Here are a few notable cases where critics and audiences responded differently.
-      </p>
-
-      <div class="divergent-movies" style="display:flex; justify-content:space-around; gap:40px; margin-top:40px;">
-
-      <!-- Last Jedi -->
-      <div style="text-align:center; max-width:300px;">
-        <img src="image/Star Wars.png" alt="Star Wars: The Last Jedi" style="width:100%; border-radius:6px;">
-        <h3 style="margin-top:15px; color:#5D2E14;">Star Wars: The Last Jedi (2017)</h3>
-        <p style="line-height:1.7;">
-          Critics praised <em>The Last Jedi</em> for its bold storytelling choices and thematic depth.
-          Many audience members felt it strayed from the saga’s established characters and tone.
-          This divide reflects differing expectations about innovation versus tradition in a long-running franchise.
-        </p>
-      </div>
-
-      <!-- The Greatest Showman -->
-      <div style="text-align:center; max-width:300px;">
-        <img src="image/The Greatest Showman.png" alt="The Greatest Showman" style="width:100%; border-radius:6px;">
-        <h3 style="margin-top:15px; color:#5D2E14;">The Greatest Showman (2017)</h3>
-        <p style="line-height:1.7;">
-          Critics viewed <em>The Greatest Showman</em> as visually energetic but narratively simplified.
-          Audiences connected strongly with its uplifting themes and memorable songs.
-          The gap highlights how spectacle and feel-good storytelling can outweigh traditional critical criteria.
-        </p>
-      </div>
-
-      <!-- Joker -->
-      <div style="text-align:center; max-width:300px;">
-        <img src="image/Joker.png" alt="Joker" style="width:100%; border-radius:6px;">
-        <h3 style="margin-top:15px; color:#5D2E14;">Joker (2019)</h3>
-        <p style="line-height:1.7;">
-          Critics were divided over <em>Joker</em>’s tone and messaging.
-          Many audience members praised its psychological depth and Joaquin Phoenix’s performance.
-          The difference suggests viewers focused more on character study and emotional impact than controversy.
-        </p>
-      </div>
-
-    </div>
-
-      <p class="story-paragraph">
-        These films give us a glimpse into how opinions can diverge.<br>
-        Next, let’s see how their tastes compare when we look at their top-rated movies.
-      </p>
-
-      <button class="load-more vintage-button" onclick="showNextPage(4, this)">
-        <span class="button-film-strip"></span>
-        Load More ↓
-      </button>
-    </section>
-
-
-    <!-- PAGE 4: Venn -->
+    <!-- PAGE 4: Outliers -->
     <section class="page hidden" id="page4">
       <div class="film-grain"></div>
-      <div class="page-header">
-        <h1 id="venn-title">Top 50 Movies: Critic vs Audience</h1>
+      <div class="page-header" style="margin-bottom:10px;">
+        <h1 style="margin-top:20px">Sometimes the Opinions Diverge</h1>
+        <div class="film-strip-divider"></div>
+      </div>
+      <p class="section-desc">
+        From the guessing game, we saw that some movies land similarly with both groups while others drift apart. Here
+        are a
+        few notable cases where critics and audiences responded differently.
+      </p>
+
+      <div class="divergent-movies-compact">
+
+        <!-- The Greatest Showman -->
+        <div class="movie-divergent-card">
+          <img src="image/The Greatest Showman.png" alt="The Greatest Showman">
+          <div class="movie-divergent-info">
+            <h3>The Greatest Showman <span class="year">(2017)</span></h3>
+            <div class="score-comparison">
+              <div class="score-bar">
+                <span class="score-label">Critics</span>
+                <div class="bar-track">
+                  <div class="bar-fill critic" data-width="57" style="width: 0%;"></div>
+                </div>
+                <span class="score-value critic-val">57%</span>
+              </div>
+              <div class="score-bar">
+                <span class="score-label">Audience</span>
+                <div class="bar-track">
+                  <div class="bar-fill audience" data-width="86" style="width: 0%;"></div>
+                </div>
+                <span class="score-value audience-val">86%</span>
+              </div>
+            </div>
+
+            <button class="why-split-toggle">Why the split? ▼</button>
+            <div class="why-split-content">
+              <ul>
+                <li><strong>Critics</strong> found the narrative predictable and the emotional beats manipulative,
+                  criticizing it as style over substance.</li>
+                <li><strong>Audiences</strong> embraced the catchy musical numbers and uplifting message, making it a
+                  cultural phenomenon with repeat viewings.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Last Jedi -->
+        <div class="movie-divergent-card">
+          <img src="image/Star Wars.png" alt="Star Wars: The Last Jedi">
+          <div class="movie-divergent-info">
+            <h3>Star Wars: The Last Jedi <span class="year">(2017)</span></h3>
+            <div class="score-comparison">
+              <div class="score-bar">
+                <span class="score-label">Critics</span>
+                <div class="bar-track">
+                  <div class="bar-fill critic" data-width="91" style="width: 0%;"></div>
+                </div>
+                <span class="score-value critic-val">91%</span>
+              </div>
+              <div class="score-bar">
+                <span class="score-label">Audience</span>
+                <div class="bar-track">
+                  <div class="bar-fill audience" data-width="41" style="width: 0%;"></div>
+                </div>
+                <span class="score-value audience-val">41%</span>
+              </div>
+            </div>
+
+            <button class="why-split-toggle">Why the split? ▼</button>
+            <div class="why-split-content">
+              <ul>
+                <li><strong>Critics</strong> praised director Rian Johnson's willingness to subvert expectations and
+                  take
+                  the franchise in unexpected directions.</li>
+                <li><strong>Audiences</strong> felt betrayed by the treatment of beloved characters like Luke Skywalker
+                  and were divided on major plot choices.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Joker -->
+        <div class="movie-divergent-card">
+          <img src="image/Joker.png" alt="Joker">
+          <div class="movie-divergent-info">
+            <h3>Joker <span class="year">(2019)</span></h3>
+            <div class="score-comparison">
+              <div class="score-bar">
+                <span class="score-label">Critics</span>
+                <div class="bar-track">
+                  <div class="bar-fill critic" data-width="68" style="width: 0%;"></div>
+                </div>
+                <span class="score-value critic-val">68%</span>
+              </div>
+              <div class="score-bar">
+                <span class="score-label">Audience</span>
+                <div class="bar-track">
+                  <div class="bar-fill audience" data-width="89" style="width: 0%;"></div>
+                </div>
+                <span class="score-value audience-val">89%</span>
+              </div>
+            </div>
+
+            <button class="why-split-toggle">Why the split? ▼</button>
+            <div class="why-split-content">
+              <ul>
+                <li><strong>Critics</strong> were divided on whether the film glamorized violence or offered meaningful
+                  social commentary about mental health.</li>
+                <li><strong>Audiences</strong> were captivated by Joaquin Phoenix's transformative performance and the
+                  film's dark, gritty atmosphere.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <p class="section-desc">
+        These films give us a glimpse into how opinions can diverge. Next, let's compare their top-rated movies.
+      </p>
+
+      <button class="load-more vintage-button" onclick="showNextPage(5, this)" style="margin-top:10px;">
+
+        <span class="button-film-strip"></span>
+        Load More ↓
+      </button>
+    </section>
+
+    <!-- PAGE 5: Venn -->
+    <section class="page hidden" id="page5">
+      <div class="film-grain"></div>
+      <div class="page-header" style="margin-bottom: 6px;">
+        <h1 id="venn-title" style="margin-top:0px; font-size:2rem;">Top 50 Movies: Critic vs Audience</h1>
         <div class="film-strip-divider"></div>
       </div>
 
-      
-      <p class="section-desc">
-        This chart shows how much overlap exists between the top-rated films of critics and audiences.<br>
-        <strong><u>Adjust the slider to see how the intersection changes as we vary the number of movies.</u></strong>
-      </p>
-      
-      <div class="chart-container" style="flex-direction:column;align-items:center;">
-        <div id="venn-controls" style="margin-bottom:30px;">
-          <label for="topNRange" class="vintage-label">Number of Movies:</label>
-          <input type="range" id="topNRange" min="15" max="200" value="50" step="5" class="vintage-slider">
-          <span id="topNValue" class="vintage-value">50</span>
-        </div>
-        <div id="venn"></div>
+      <!-- Top-N slider directly under header -->
+      <div class="venn-top-control">
+        <input type="range" id="topNRange" min="15" max="200" value="50" step="5" class="vintage-slider-long">
+        <span id="topNValue" class="vintage-value-large">50</span>
       </div>
 
-      <div class="takeaways-box vintage-card">
-      <p class="story-paragraph" style="max-width:650px;">
-        Across the <strong>Top 15 to Top 80</strong>, <strong>only one film</strong> appears on both lists:
-        <strong>Days and Nights in the Forest</strong>.<br>
-        The next overlap doesn’t show up until the <strong>Top 85</strong> with
-        <strong>Folklore: The Long Pond Studio Sessions</strong>.
-        <br><br>
-        These sparse intersections suggest that critics and audiences often favor
-        <strong>very different films</strong> when highlighting their top picks.
-      </p>
-    </div>
 
+      <!-- Centered Venn diagram + summary -->
+      <div class="venn-full-layout">
+        <div class="venn-center-area">
+          <div id="venn"></div>
+        </div>
 
-      <p class="section-desc" style="margin-top:35px;">
+        <div class="takeaways-box-compact vintage-card" id="venn-takeaway">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+      <p class="section-desc">
         But what happens when we step back and look at the bigger picture?
       </p>
 
-      <button class="load-more vintage-button" onclick="showNextPage(5, this)">
+      <button class="load-more vintage-button" onclick="showNextPage(6, this)" style="margin-top:5px;">
         <span class="button-film-strip"></span>
         Load More ↓
       </button>
     </section>
 
-    <!-- PAGE 5: Critics & Audiences Alignment Dashboard -->
-    <section class="page hidden" id="page5" style="background-color:#F5E6D3; padding:60px 0;">
+    <!-- PAGE 6: Long-Term Trends -->
+    <section class="page hidden" id="page6" style="background-color:#F5E6D3; padding:60px 0;">
       <div class="film-grain"></div>
       <div style="max-width:950px; margin:auto; font-family:'Crimson Text', serif; position:relative; z-index:2;">
 
         <!-- Header -->
         <div class="page-header">
-          <h1>The Bigger Picture: Critics and Audience</h1>
+          <h1>The Bigger Picture: Trends Over Time</h1>
           <div class="film-strip-divider"></div>
         </div>
         <p class="section-desc">
           The extreme examples make critics and audiences seem far apart, but the broader trends tell a different story.
-          Across decades and genres, both groups show surprisingly strong alignment — from long-term trends
-          to specific movie types. Let's explore how.
+          Across decades, both groups show remarkably similar long-term patterns in how they rate movies.
         </p>
 
-        <!-- Charts Layout -->
-        <div class="page5-grid">
+        <div class="chart-section vintage-card" style="margin-bottom:60px;">
+          <h3 class="chart-title">Average Ratings Over Time</h3>
+          <p class="chart-description">
+            Over the past century, critics and audiences have shown very similar patterns in how they rate movies.<br>
+            After the 1980s, their curves run nearly in <strong>parallel</strong>, likely because people had greater
+            access
+            to movies and more chances to discuss them. <br>
+            This suggests that both groups tend to react in similar ways to major changes in cinema.
+          </p>
+          <div id="chart-q2"></div>
+        </div>
 
+        <button class="load-more vintage-button" onclick="showNextPage(7, this)" style="margin-top:40px;">
+          <span class="button-film-strip"></span>
+          Load More ↓
+        </button>
 
-          <!-- Left: Three Charts -->
-          <div>
+      </div>
+    </section>
 
-            <!-- Time Trend Chart -->
-            <div class="chart-section vintage-card" style="margin-bottom:60px;">
-              <h3 class="chart-title">
-                Average Ratings Over Time
-              </h3>
-              <p class="chart-description">
-                Over the past century, critics and audiences have followed similar rating trajectories. Their curves run
-                nearly in <strong>parallel</strong>, especially after the 1980s, when access to films and film discourse became more widespread—suggesting
-                that both groups respond to major shifts in cinema in comparable ways.
-              </p >
-              <div id="chart-q2"></div>
-            </div>
+    <!-- PAGE 7: Patterns Across Genres -->
+    <section class="page hidden" id="page7" style="background-color:#F5E6D3; padding:60px 0;">
+      <div class="film-grain"></div>
+      <div style="max-width:1000px; margin:auto; font-family:'Crimson Text', serif; position:relative; z-index:2;">
 
-            <!-- Genre Charts Row -->
-            <div class="chart-row" style="
-                                display:flex;
-                                justify-content:center;
-                                align-items:flex-start;
-                                gap:40px;
-                                flex-wrap:nowrap;
-                                max-width:1200px;
-                                margin:0 auto;
-                             ">
+        <!-- Header -->
+        <div class="page-header">
+          <h1>The Bigger Picture: Patterns Across Genres</h1>
+          <div class="film-strip-divider"></div>
+        </div>
 
-              <!-- Genre Differences -->
-              <div class="chart-section vintage-card" style="flex:1; min-width:480px; max-width:600px;">
-                <h3 class="chart-title">
-                  Genre-Level Differences
-                </h3>
-                <p class="chart-description">
-                  Across genres, the average score gap is typically under 5%, indicating that substantial disagreement is rare. 
-                  Critics tend to favor <strong>Animation</strong> and
-                  <strong>Comedy</strong>, while audiences lean slightly toward
-                  <strong>Fantasy</strong> and <strong>Musicals</strong>.
-                  Even so, these differences remain small and consistent across categories.
-                  <strong><u>Click any bar to explore a genre interactively.</u></strong>
-                </p >
-                <div id="chart-q1"></div>
-              </div>
+        <p class="section-desc">
+          Critics and audiences tend to rate movies in similar ways, not just across decades, but across genres as well.
+        </p>
 
-              <!-- Within-Genre Agreement -->
-              <div class="chart-section vintage-card" style="flex:1; min-width:480px; max-width:600px;">
-                <h3 class="chart-title">
-                  Within-Genre Agreement
-                </h3>
-                <p class="chart-description">
-                  Within each genre, most films cluster <strong>close to the diagonal equality line</strong>, revealing that critics and audiences often
-                  converge on what they consider strong or weak titles. The tight spread around the line highlights a generally shared
-                  sense of quality.<br>
-                </p >
-                <div id="chart-scatter-multi"></div>
-              </div>
+        <!-- Two charts side by side -->
+        <div class="chart-row"
+          style="display:flex; justify-content:center; align-items:flex-start; gap:40px; flex-wrap:nowrap; max-width:1200px; margin:0 auto;">
 
-            </div>
+          <!-- Genre-Level Differences -->
+          <div class="chart-section vintage-card" style="flex:1; min-width:480px; max-width:600px;">
+            <h3 class="chart-title">Genre-Level Differences</h3>
+            <p class="chart-description" style="text-align:center;">
+              Across genres, critics and audiences show strong overall agreement, with average score gaps under
+              <strong>6%</strong>. Critics tend to prefer <strong>Animation</strong> and <strong>Comedy</strong>,
+              while audiences favor <strong>Fantasy</strong> and <strong>Musicals</strong>.
+              <br><br><strong><u>Click any bar to explore a genre interactively.</u></strong>
+            </p>
+            <div id="chart-q1"></div>
+          </div>
 
+          <!-- Within-Genre Agreement -->
+          <div class="chart-section vintage-card" style="flex:1; min-width:480px; max-width:600px;">
+            <h3 class="chart-title">Within-Genre Agreement</h3>
+            <p class="chart-description" style="text-align:center;">
+              Within each genre, most films cluster <strong>close to the diagonal equality line</strong>, revealing that
+              critics and audiences often converge on what they consider strong or weak titles.
+              <br><br><strong><u>Hover over any point to view film details.</u></strong>
+            </p>
+            <div id="chart-scatter-multi"></div>
           </div>
 
         </div>
 
-        <div class="takeaways-box vintage-card">
-          <!-- <h3 style="color:#8B4513; font-size:1.4rem; margin-bottom:15px;">Key Takeaways</h3> -->
-          <p>
-          Across time, genres, and individual films, critics and audiences show far more alignment than the isolated disagreements might suggest.
-          Disagreement exists, but it is modest, patterned, and rarely large enough to outweigh the broad consistency in how both
-          groups evaluate movies.
-          </p >
-        </div>
-
-        <button class="load-more vintage-button" onclick="showNextPage(6, this)" style="margin-top:40px;">
+        <button class="load-more vintage-button" onclick="showNextPage(8, this)" style="margin-top:40px;">
           <span class="button-film-strip"></span>
           Load More ↓
         </button>
+
       </div>
     </section>
 
 
-    <!-- PAGE 6: Conclusion -->
-    <section class="page hidden" id="page6">
+    <!-- PAGE 8: Conclusion lead-in -->
+    <section class="page hidden" id="page8">
       <div class="film-grain"></div>
-  
+
       <div class="page-header">
-          <h1>So... Who Should You Trust?</h1>
-          <div class="film-strip-divider"></div>
-        </div>
+        <h1>So... Who Should You Trust?</h1>
+        <div class="film-strip-divider"></div>
+      </div>
       <p class="section-desc">
         After analyzing thousands of films across genres and decades, one pattern stands out:
         critics and audiences agree far more often than the disagreements suggest.
@@ -283,112 +408,195 @@
       </p>
 
       <p class="story-paragraph" style="margin-top:30px;">
-        <strong>Now it's your turn!</strong> Use the interactive tool below to explore movies based on genre, score, timeline, and vote
-        counts.
-        The distributions and movie bubbles update automatically as you adjust the filters.
-        Hover over a movie to see details, and export the filtered set as a CSV for deeper analysis.
+        <strong>Now it's your turn!</strong> Use the interactive tool below to explore movies based on genre, score,
+        timeline, and vote counts.
+
       </p>
-      <button class="load-more vintage-button" onclick="showNextPage(7, this)">
+      <button class="load-more vintage-button" onclick="showNextPage(9, this)">
         <span class="button-film-strip"></span>
         Load More ↓
       </button>
-    </section>
 
-    <!-- PAGE 7: Recommendation Tool -->
-    <section class="page hidden" id="page7">
+      <div id="page8-video-container">
+        <video id="page8-video" autoplay muted loop playsinline>
+          <source src="video/zootopiz.mp4" type="video/mp4">
+        </video>
+      </div>
+
+    </section>
+    <!-- PAGE 9: Recommendation Tool (Corrected Layout) -->
+    <section class="page hidden" id="page9">
       <div class="film-grain"></div>
+
       <div id="recommendation-tool-container">
         <div id="rec-dashboard" style="background:#F5E6D3; padding:0;">
+
+          <!-- ▲ Top bar -->
           <div class="topbar vintage-topbar">
             <div class="title">🎞️ Movie Recommendation Explorer</div>
+
             <div style="display:flex;gap:12px;align-items:center;">
+
+              <!-- Genre -->
               <div>
                 <label class="smalllabel vintage-label">Genre</label>
                 <select id="genre" class="selector vintage-select">
                   <option>All</option>
                 </select>
               </div>
-              <div>
-                <label class="smalllabel vintage-label">Top N</label>
-                <select id="topN" class="selector vintage-select">
-                  <option value="5">Top 5</option>
-                  <option value="10" selected>Top 10</option>
-                  <option value="30">Top 30</option>
-                </select>
+
+              <!-- Count + Export (YOUR ORIGINAL VERSION) -->
+              <div class="count-export-inline">
+                <label class="smalllabel vintage-label">Counts (filtered)</label>
+                <div id="counts-box">5426</div>
+                <button id="exportBtn" class="export-mini-btn">Export CSV</button>
               </div>
             </div>
           </div>
 
+          <!-- ▲ 2-column layout (your original design) -->
           <div class="layout">
+
+            <!-- LEFT column -->
             <div class="col-left">
               <div class="card vintage-card">
                 <div class="smalllabel vintage-label">Vote distribution</div>
                 <svg id="voteSvg" width="140" height="420"></svg>
               </div>
+
+              <div class="card vintage-card">
+                <div class="smalllabel vintage-label">Filters summary</div>
+
+                <!-- Votes -->
+                <div style="margin-top:12px;">
+                  <div style="font-weight:700; color:#5D4037;">Votes:</div>
+                  <div id="voteSummary" class="filter-line"></div>
+                </div>
+
+                <!-- Critic -->
+                <div style="margin-top:12px;">
+                  <div style="font-weight:700; color:#5D4037;">Critic:</div>
+                  <div id="critSummary" class="filter-line"></div>
+                </div>
+
+                <!-- Audience -->
+                <div style="margin-top:12px;">
+                  <div style="font-weight:700; color:#5D4037;">Audience:</div>
+                  <div id="audSummary" class="filter-line"></div>
+                </div>
+              </div>
+
             </div>
 
+            <!-- CENTER column -->
             <div class="col-center">
+
               <div style="display:flex;gap:12px;">
                 <div class="card vintage-card" style="flex:1;">
                   <div class="smalllabel vintage-label">Critic score distribution</div>
                   <svg id="criticSvg" width="420" height="140"></svg>
                 </div>
+
                 <div class="card vintage-card" style="flex:1;">
                   <div class="smalllabel vintage-label">Audience score distribution</div>
                   <svg id="audienceSvg" width="420" height="140"></svg>
                 </div>
               </div>
 
-              <div class="card vintage-card" style="flex:1;">
-                <div class="smalllabel vintage-label">Timeline (release year)</div>
-                <svg id="timeline" width="1000" height="420"></svg>
+              <!-- Timeline with scroll -->
+              <div class="card vintage-card" style="flex:1; overflow:visible;">
+                <div class="smalllabel vintage-label">Movies across release years</div>
+
+                <div id="timeline-wrap"
+                  style="overflow-x:auto; overflow-y:hidden; width:100%; padding-bottom:8px; background:#F5E6D3;">
+                  <svg id="timeline" width="2000" height="420"></svg>
+                </div>
+
                 <div class="legend vintage-legend" style="margin-top:6px;">
-                  Bubble size = avg(critic,audience). X = release year.
+                  The Y-position is random — it’s just to separate overlapping movies. X = release year.
                 </div>
               </div>
             </div>
-
-            <div class="col-right">
-              <div class="card vintage-card">
-                <div class="smalllabel vintage-label">Filters summary</div>
-                <div style="margin-top:8px; color:#5D4037;">Votes: <span id="voteSummary" class="num">All</span></div>
-                <div style="margin-top:8px; color:#5D4037;">Critic: <span id="critSummary" class="num">All</span></div>
-                <div style="margin-top:8px; color:#5D4037;">Audience: <span id="audSummary" class="num">All</span></div>
-              </div>
-
-              <div class="card vintage-card" style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-                <div class="smalllabel vintage-label">Counts (filtered)</div>
-                <div id="counts" class="counts">—</div>
-                <button id="exportBtn" class="export-btn vintage-button">Export filtered CSV</button>
-              </div>
-            </div>
           </div>
 
+          <!-- Bottom fixed panel -->
           <div class="bottom-fixed">
             <div class="detail vintage-card">
-              <div style="font-weight:700; color:#8B4513;">Hovered movie details</div>
+              <div style="font-weight:700; color:#8B4513;">Click a movie to see its details</div>
               <div id="detailContent" style="margin-top:8px;color:#4A2C2A"></div>
             </div>
+
             <div class="table-area vintage-card">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-                <div style="font-weight:700; color:#8B4513;">Top N</div>
-                <div style="font-size:12px;color:#8B7355;">rank = avg(critic,audience)</div>
+
+              <!-- ▲ 新的 Top N filter 放在表格上方 -->
+              <div class="table-header-top">
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <label class="smalllabel vintage-label">Top </label>
+                  <select id="topN" class="selector vintage-select" style="width:100px;">
+                    <option value="5"> 5</option>
+                    <option value="10" selected> 10</option>
+                    <option value="30"> 30</option>
+                  </select>
+                </div>
+
               </div>
+
+              <!-- ▼ 表格主体 -->
               <div id="tableWrap"></div>
+
             </div>
+
           </div>
+
         </div>
       </div>
 
-      <p class="section-desc" style="margin-top:50px;">
-        That's it — you've uncovered the double twist:
+      <button class="load-more vintage-button" onclick="showNextPage(10, this)" style="margin-top:40px;">
+        <span class="button-film-strip"></span>
+        Load More ↓
+      </button>
+    </section>
+
+
+
+    <!-- PAGE 10: Final text + Back to Top -->
+    <section class="page hidden" id="page10">
+      <div class="film-grain"></div>
+
+      <div class="page-header">
+        <h1>That's it — you've uncovered the double twist 🎉</h1>
+        <div class="film-strip-divider"></div>
+      </div>
+
+      <p class="section-desc">
         Critics and audiences aren't rivals.
         They're partners in shaping what great cinema means.
-        Whether you trust critics, audiences, or your own heart —
+        Whether you trust critics, audiences, or your own heart,
         the story of movies is one we all write together.
       </p>
 
-      <p class="footer-note">Created by Team Yilin Jiang, Ylesia Wu, Mingjiao Diao</p>
+      <p class="footer-note" style="margin-top:80px;">Created by Yilin Jiang, Ylesia Wu, Mingjiao Diao</p>
+
+      <p class="footer-note" style="font-weight: bold;margin-top:80px;">GitHub Repository</p>
+      <p class="footer-note">
+        <a href="https://github.com/ylesia-wu/critics-vs-audience-movie-rating-analysis">
+          critics-vs-audience-movie-rating-analysis
+        </a>
+      </p>
+
+      <p class="footer-note" style="font-weight: bold;margin-top:80px;">Data Source</p>
+
+      <p class="footer-note">
+        <a href=" ">
+          Rotten Tomatoes movies 1970–2024 Dataset from Reddit
+        </a>
+      </p>
+
+      <p class="footer-note">
+        <a href="https://www.kaggle.com/datasets/rajugc/imdb-movies-dataset-based-on-genre">
+          IMDb-based dataset from Kaggle
+        </a>
+      </p>
       <div style="text-align:center; margin-top:50px; margin-bottom:60px;">
         <button id="reset-btn" class="load-more vintage-button">
           <span class="button-film-strip"></span>
@@ -402,38 +610,25 @@
   <div class="tooltip vintage-tooltip" id="tooltip"></div>
 
   <script>
-    //--------------------------------------------------
-    // ✅ “Back to Top ↑” 按钮逻辑：返回顶部并展示所有页面
-    //--------------------------------------------------
-
+    // “Back to Top ↑” button: show all pages and scroll to top
     document.addEventListener("DOMContentLoaded", () => {
       const resetBtn = document.getElementById("reset-btn");
       if (!resetBtn) return;
 
-      // 🟢 点击后行为
       resetBtn.addEventListener("click", () => {
-        // ✅ 显示所有页面
         document.querySelectorAll(".page").forEach(p => p.classList.remove("hidden"));
-
-        // ✅ 隐藏所有 “Load More” 按钮（因为都展开了）
         document.querySelectorAll(".load-more").forEach(btn => btn.style.display = "none");
 
-        // ✅ 平滑滚动到页面顶部
         setTimeout(() => {
           window.scrollTo({ top: 0, behavior: "smooth" });
         }, 150);
 
-        // ✅ 更新 localStorage，使刷新后仍保持所有页面可见
         const totalPages = document.querySelectorAll(".page").length;
         localStorage.setItem("lastPage", totalPages);
 
-        // ✅ 保证 “Back to Top” 按钮不会被隐藏
         resetBtn.style.display = "block";
       });
     });
-
-
-
   </script>
 
   <script src="script.js"></script>

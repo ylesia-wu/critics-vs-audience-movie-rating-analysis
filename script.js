@@ -4,88 +4,110 @@
 
 // Vintage color palette
 const vintageColors = {
-  critic: '#8B4513', // Saddle brown
-  audience: '#D2691E', // Chocolate
-  overlap: '#6F4E37', // Coffee brown
-  positive: '#D4AF37', // Gold
-  negative: '#B7410E', // Rust
-  neutral: '#C19A6B', // Camel
-  accent: '#CD853F' // Peru
+  critic: '#8B4513',
+  audience: '#D2691E',
+  overlap: '#6F4E37',
+  positive: '#D4AF37',
+  negative: '#B7410E',
+  neutral: '#C19A6B',
+  accent: '#CD853F'
 };
 
 //--------------------------------------------------
-// ✅ Page Loading Logic (First time → Page1; Refresh → restore progress)
+// Page loading logic (auto show up to page 2)
 //--------------------------------------------------
 window.addEventListener("load", () => {
-  // 如果是新会话（第一次打开标签页） → 清除旧记录
   if (!sessionStorage.getItem("visited")) {
     localStorage.removeItem("lastPage");
     sessionStorage.setItem("visited", "true");
   }
 
-  // 读取上次浏览的页码
-  const lastPage = parseInt(localStorage.getItem("lastPage")) || 1;
+  let lastPage = parseInt(localStorage.getItem("lastPage"));
+  if (isNaN(lastPage)) lastPage = 1;
 
-  // 隐藏所有页面
-  document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
+  const maxVisiblePage = lastPage;
 
-  // ✅ 显示从第 1 页到上次浏览页的所有内容
-  for (let i = 1; i <= lastPage; i++) {
+  document.querySelectorAll(".page").forEach(p => {
+    p.classList.add("hidden");
+    p.style.display = "none";
+  });
+
+  for (let i = 1; i <= maxVisiblePage; i++) {
     const section = document.getElementById(`page${i}`);
     if (section) {
       section.classList.remove("hidden");
-      // 把前一页的 “Load More” 按钮隐藏
-      const btn = section.querySelector(".load-more");
-      if (btn && i < lastPage) btn.style.display = "none";
+      section.style.display = "block";
     }
   }
 
-  // 滚动到最后一页
-  document.getElementById(`page${lastPage}`)?.scrollIntoView({ behavior: "instant" });
+  const target = document.getElementById(`page${maxVisiblePage}`);
+  if (target) {
+    target.scrollIntoView({ behavior: "instant" });
+  }
 });
 
-
 //--------------------------------------------------
-// ✅ 更新 Page 并保存进 localStorage
+// Show next page and store progress
 //--------------------------------------------------
 function showNextPage(next, btn) {
   const nextPage = document.getElementById(`page${next}`);
   if (nextPage) {
     nextPage.classList.remove("hidden");
-    nextPage.scrollIntoView({ behavior: "smooth" });
-    localStorage.setItem("lastPage", next); // 保存进度
+    nextPage.style.display = "block";
+    nextPage.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+    localStorage.setItem("lastPage", String(next));
   }
   if (btn) btn.style.display = "none";
 }
 
-
-
 //--------------------------------------------------
-// Shared tooltip
+// Shared tooltip (if used elsewhere)
 //--------------------------------------------------
 const tooltip = d3.select("#tooltip");
 
-function showNextPage(next, btn) {
-  const nextPage = document.getElementById(`page${next}`);
-  if (nextPage) {
-    nextPage.classList.remove("hidden");
-    nextPage.scrollIntoView({ behavior: "smooth" });
-    localStorage.setItem("lastPage", next);
-  }
-  if (btn) btn.style.display = "none";
-}
-
 //--------------------------------------------------
-// 🎮 Horizontal Guessing Game Carousel (Fixed Version)
+// Guessing Game Carousel
 //--------------------------------------------------
 
 const movieRounds = [
-  { title: "Barbie", poster: "image/Barbie.png", mode: "critic" },
-  { title: "Top Gun: Maverick", poster: "image/Top Gun.png", mode: "audience" },
-  { title: "Captain America: The First Avenger", poster: "image/Captain America.png", mode: "critic" },
-  { title: "The Greatest Showman", poster: "image/The Greatest Showman.png", mode: "audience" },
-  { title: "Star Wars: The Last Jedi", poster: "image/Star Wars.png", mode: "critic" }
+  {
+    title: "Barbie",
+    poster: "image/Barbie.png",
+    mode: "audience",
+    year: 2023,
+    description: "A doll living in Barbieland is expelled for not being perfect enough and sets off on an adventure in the real world."
+  },
+  {
+    title: "Top Gun: Maverick",
+    poster: "image/Top Gun.png",
+    mode: "audience",
+    year: 2022,
+    description: "After thirty years of service, Pete \"Maverick\" Mitchell must confront the ghosts of his past while training a new detachment of graduates for a specialized mission."
+  },
+  {
+    title: "Captain America: The First Avenger",
+    poster: "image/Captain America.png",
+    mode: "audience",
+    year: 2011,
+    description: "A frail but determined young man, Steve Rogers, is transformed into the super-soldier Captain America to help the U.S. fight against the Nazi-aligned Hydra organization during World War II."
+  },
+  {
+    title: "The Greatest Showman",
+    poster: "image/The Greatest Showman.png",
+    mode: "audience",
+    year: 2017,
+    description: "Inspired by the story of P.T. Barnum, this musical celebrates the birth of show business and tells of a visionary who rose from nothing to create a spectacle that became a worldwide sensation."
+  },
+  {
+    title: "Star Wars: The Last Jedi",
+    poster: "image/Star Wars.png",
+    mode: "audience",
+    year: 2017,
+    description: "Rey continues her epic journey with Finn and Poe while seeking out Luke Skywalker, who is living in self-imposed exile, as the Resistance fights against the First Order."
+  }
 ];
+
+const totalMovies = movieRounds.length;
 
 const carouselContainer = document.getElementById("guessing-carousel");
 
@@ -95,7 +117,13 @@ carouselContainer.innerHTML = `
       <div class="card-loading">Loading...</div>
     </div>
   </div>
-  <div class="carousel-dots"></div>
+  <div class="carousel-bottom-bar" style="margin-top:5px; text-align:center;">
+    <div class="carousel-dots" style="margin-bottom:5px;"></div>
+    <div class="score-tracker" id="score-tracker"
+      style="font-size:15px; color:#666; font-family: 'Playfair Display', serif;">
+      Score: 0 / ${totalMovies}
+    </div>
+  </div>
   <button class="carousel-btn left" id="carousel-prev" style="display:none;">❮</button>
   <button class="carousel-btn right" id="carousel-next" style="display:none;">❯</button>
 `;
@@ -104,16 +132,38 @@ const cardContainer = carouselContainer.querySelector("#active-card");
 const dotsContainer = carouselContainer.querySelector(".carousel-dots");
 const prevBtn = carouselContainer.querySelector("#carousel-prev");
 const nextBtn = carouselContainer.querySelector("#carousel-next");
-const loadMoreBtn = document.getElementById("carousel-next-btn");
 
 let currentIndex = 0;
 let revealedCards = [false, false, false, false, false];
-
 let cardData = [];
 
-function isTransitionIndex(ci) { return ci === 3; }
-function isMovieCarouselIndex(ci) { return ci !== 3; }
+// scoring
+let answeredCount = 0;
+let correctCount = 0;
+
+function updateScoreDisplay() {
+  const scoreEl = document.getElementById("score-tracker");
+  if (!scoreEl) return;
+  scoreEl.textContent = `Score: ${correctCount} / ${totalMovies}`;
+}
+
+// scroll helper
+function scrollToCardTop() {
+  if (!cardContainer) return;
+  const rect = cardContainer.getBoundingClientRect();
+  const absoluteTop = window.scrollY + rect.top;
+  window.scrollTo({ top: absoluteTop - 10, behavior: "smooth" });
+}
+
+// index helpers
+function isTransitionIndex(ci) {
+  return cardData[ci] && cardData[ci].transition === true;
+}
+function isSummaryIndex(ci) {
+  return cardData[ci] && cardData[ci].summary === true;
+}
 function carouselIndexToMovieIndex(ci) {
+  if (isTransitionIndex(ci) || isSummaryIndex(ci)) return null;
   if (ci <= 2) return ci;
   if (ci >= 4) return ci - 1;
   return null;
@@ -123,6 +173,7 @@ function movieIndexToCarouselIndex(mi) {
   return mi + 1;
 }
 
+// load CSV
 d3.csv("data/rotten_tomatoes.csv").then(data => {
   movieRounds.forEach((movie, i) => {
     const match = data.find(
@@ -153,13 +204,17 @@ d3.csv("data/rotten_tomatoes.csv").then(data => {
     dotsContainer.appendChild(dot);
   });
 
-  // Insert transition screen
+  // insert transition card at index 3
   cardData.splice(3, 0, { transition: true });
+
+  // append summary card
+  cardData.push({ summary: true });
 
   renderCard(0);
   updateNavigation();
+  updateScoreDisplay();
 
-  // Dot click
+  // dot click
   Array.from(dotsContainer.children).forEach(dot => {
     dot.addEventListener("click", () => {
       const mi = parseInt(dot.dataset.index);
@@ -168,86 +223,145 @@ d3.csv("data/rotten_tomatoes.csv").then(data => {
         currentIndex = targetCi;
         renderCard(currentIndex);
         updateNavigation();
+        scrollToCardTop();
       }
     });
   });
 
+  // prev
   prevBtn.addEventListener("click", () => {
     if (currentIndex > 0) {
       currentIndex--;
       renderCard(currentIndex);
       updateNavigation();
+      scrollToCardTop();
     }
   });
 
+  // next
   nextBtn.addEventListener("click", () => {
     const lastIndex = cardData.length - 1;
     if (currentIndex < lastIndex) {
+
       if (isTransitionIndex(currentIndex)) {
         currentIndex++;
         renderCard(currentIndex);
         updateNavigation();
-      } else {
-        const mi = carouselIndexToMovieIndex(currentIndex);
-        if (mi !== null && revealedCards[mi]) {
-          currentIndex++;
-          renderCard(currentIndex);
-          updateNavigation();
-        }
+        scrollToCardTop();
+        return;
+      }
+
+      const mi = carouselIndexToMovieIndex(currentIndex);
+      if (mi !== null && revealedCards[mi]) {
+        currentIndex++;
+        renderCard(currentIndex);
+        updateNavigation();
+        scrollToCardTop();
       }
     }
   });
 });
 
+// render card
 function renderCard(index) {
   const card = cardData[index];
 
-  if (isTransitionIndex(index)) {
+  // summary  **← THIS PART IS MODIFIED**
+  if (isSummaryIndex(index)) {
+    const percent = Math.round((correctCount / totalMovies) * 100);
+    let titleText, bodyText;
+
+    if (correctCount <= 1) {
+      titleText = `You scored ${correctCount} / ${totalMovies} (${percent}%)`;
+      bodyText = `
+        This round was a bit rough — you only picked up ${percent}%.<br>
+        It looks like the relationship between critic and audience scores
+        feels a little unpredictable for you.<br>
+        In the next sections, we’ll walk through more concrete examples
+        so these patterns start to feel much more intuitive.
+      `;
+    } else if (correctCount <= 3) {
+      titleText = `Nice start! ${correctCount} / ${totalMovies} (${percent}%)`;
+      bodyText = `
+        You already have a decent sense of how critics and audiences line up on some films.<br>
+        Up next, we’ll look at clearer comparisons,
+        so you can sharpen that intuition into a more structured understanding.
+      `;
+    } else {
+      titleText = `Great job! ${correctCount} / ${totalMovies} (${percent}%)`;
+      bodyText = `
+        You’re clearly very tuned in to how critics and audiences react to these movies.<br>
+        In the next part, we’ll dive deeper into the data and stories behind these differences,
+        and see what might be driving those gaps or agreements.
+      `;
+    }
+
+    cardContainer.className = "summary-card";
     cardContainer.innerHTML = `
-      <div class="transition-message">
-        <p style="font-size:18px;line-height:1.6;color:var(--vintage-dark)">
-          It seems that critics and audiences often agree!
-        </p >
-        <p style="font-size:16px;color:var(--vintage-coffee);margin-top:30px;font-style:italic;">
-          Or do they?
-        </p >
-      </div>
+      <p style="font-size:20px;line-height:1.6;color:var(--vintage-dark);font-weight:600;">
+        ${titleText}
+      </p>
+      <p style="font-size:16px;color:var(--vintage-coffee);margin-top:20px;line-height:1.8;">
+        ${bodyText}
+      </p>
     `;
     return;
   }
 
+  // transition
+  if (isTransitionIndex(index)) {
+    cardContainer.className = "transition-message";
+    cardContainer.innerHTML = `
+      <p style="font-size:18px;line-height:1.6;color:var(--vintage-dark)">
+        It seems that critics and audiences often agree!
+      </p>
+      <p style="font-size:16px;color:var(--vintage-coffee);margin-top:30px;font-style:italic;">
+        Or do they?
+      </p>
+    `;
+    return;
+  }
+
+  // movie card
   const mi = carouselIndexToMovieIndex(index);
+  cardContainer.className = "movie-card";
 
-  cardContainer.innerHTML = `
-    <h2>${card.title}</h2>
-    <img src="${card.poster}" alt="${card.title} Poster">
+  cardContainer.innerHTML = cardContainer.innerHTML = `
+    <h2 style="margin-top:5px;margin-bottom:8px;">${card.title} (${movieRounds[mi].year})</h2>
 
-    <p><strong>${card.shownLabel} Score:</strong> ${(card.shownScore * 100).toFixed(0)}%</p >
+    <p style="font-size:15px;color:#4A2C2A;margin-bottom:10px;margin-top:5px;">
+      ${movieRounds[mi].description}
+    </p>
 
-    <p style="margin-top:15px;font-family:Playfair Display, serif;font-weight:600;color:var(--vintage-brown)">
-      Guess the ${card.guessedLabel}' Score:
-    </p >
+    <img src="${card.poster}" alt="${card.title} Poster" style="margin:8px 0;">
 
-    <input type="range" min="0" max="100" value="50" class="score-slider" id="slider-${mi}">
-    <div class="slider-value" id="value-${mi}">Your guess: 50%</div>
+    <p style="margin:5px 0;"><strong>${card.shownLabel} Score:</strong> ${(card.shownScore * 100).toFixed(0)}%</p>
 
-    <button class="reveal-btn" id="reveal-${mi}">Reveal Score</button>
-    <div class="guess-result" id="result-${mi}"></div>
+    <p id="guess-label-${mi}"
+      style="margin:5px 0;font-family:Playfair Display, serif;font-weight:600;color:var(--vintage-brown)">
+      Guess the ${card.guessedLabel}' Score: <span class="guess-num">${50}%</span>
+    </p>
+
+    <input type="range" min="0" max="100" value="50"
+      class="score-slider" id="slider-${mi}" style="margin-top:5px;">
+
+    <button class="reveal-btn" id="reveal-${mi}" style="margin-top:5px;">Reveal Score</button>
+
+    <div class="guess-result" id="result-${mi}" style="margin-top:5px;"></div>
   `;
 
   const slider = document.getElementById(`slider-${mi}`);
-  const sliderValue = document.getElementById(`value-${mi}`);
+  const label = document.querySelector(`#guess-label-${mi} .guess-num`);
   const revealBtn = document.getElementById(`reveal-${mi}`);
   const result = document.getElementById(`result-${mi}`);
 
   slider.addEventListener("input", () => {
-    sliderValue.textContent = `Your guess: ${slider.value}%`;
+    label.textContent = `${slider.value}%`;
   });
 
   if (revealedCards[mi]) {
     slider.disabled = true;
     revealBtn.style.display = "none";
-
     const actualValue = Math.round(card.actualScore * 100);
     result.innerHTML = `<strong>${card.guessedLabel}' Score:</strong> ${actualValue}%`;
     return;
@@ -259,9 +373,8 @@ function renderCard(index) {
     const diff = Math.abs(guess - actual);
 
     let feedback, color, dotClass;
-
     if (diff <= 1) {
-      feedback = "🎯 Correct!";
+      feedback = "🎯 Perfect!";
       color = "var(--vintage-coffee)";
       dotClass = "correct";
     } else if (diff <= 5) {
@@ -278,16 +391,32 @@ function renderCard(index) {
       dotClass = "incorrect";
     }
 
+    result.style.opacity = "0";
+    result.style.transform = "translateY(8px) scale(0.98)";
+    result.style.transition = "opacity 0.35s ease, transform 0.35s ease";
+
     result.innerHTML = `
       <strong>${card.guessedLabel}' Score:</strong> ${actual}%<br>
-      <span style="font-weight:600;color:${color};margin-top:8px;display:inline-block;">${feedback}</span>
+      <span style="font-weight:600;color:${color};margin-top:8px;display:inline-block;">
+        ${feedback}
+      </span>
     `;
+
+    requestAnimationFrame(() => {
+      result.style.opacity = "1";
+      result.style.transform = "translateY(0) scale(1)";
+    });
+
+    if (!revealedCards[mi]) {
+      answeredCount++;
+      if (dotClass === "correct") correctCount++;
+      updateScoreDisplay();
+    }
 
     revealedCards[mi] = true;
     slider.disabled = true;
     revealBtn.style.display = "none";
 
-    // ⭐ FIXED — clean old state, apply new one
     const dot = dotsContainer.children[mi];
     dot.classList.remove("correct", "incorrect", "active");
     dot.classList.add(dotClass);
@@ -296,23 +425,27 @@ function renderCard(index) {
   });
 }
 
+// update nav
 function updateNavigation() {
-  let highlightedMovieIndex;
+  let highlightedMovieIndex = null;
 
   if (isTransitionIndex(currentIndex)) {
     highlightedMovieIndex = 2;
-  } else {
+  } else if (!isSummaryIndex(currentIndex)) {
     highlightedMovieIndex = carouselIndexToMovieIndex(currentIndex);
   }
 
   Array.from(dotsContainer.children).forEach((dot, i) => {
     dot.classList.remove("active");
-
     const isCorrect = dot.classList.contains("correct");
     const isIncorrect = dot.classList.contains("incorrect");
 
-    // highlight only if not answered yet
-    if (i === highlightedMovieIndex && !isCorrect && !isIncorrect) {
+    if (
+      highlightedMovieIndex !== null &&
+      i === highlightedMovieIndex &&
+      !isCorrect &&
+      !isIncorrect
+    ) {
       dot.classList.add("active");
     }
 
@@ -322,27 +455,132 @@ function updateNavigation() {
   });
 
   const lastIndex = cardData.length - 1;
+
   prevBtn.style.display = currentIndex > 0 ? "block" : "none";
 
   if (currentIndex >= lastIndex) {
     nextBtn.style.display = "none";
   } else if (isTransitionIndex(currentIndex)) {
     nextBtn.style.display = "block";
+  } else if (isSummaryIndex(currentIndex)) {
+    nextBtn.style.display = "none";
   } else {
     const mi = carouselIndexToMovieIndex(currentIndex);
-    nextBtn.style.display = (mi !== null && revealedCards[mi]) ? "block" : "none";
+    nextBtn.style.display =
+      (mi !== null && revealedCards[mi]) ? "block" : "none";
   }
-
-  const allRevealed = revealedCards.every(Boolean);
-  if (allRevealed) loadMoreBtn.classList.remove("hidden");
-  else loadMoreBtn.classList.add("hidden");
 }
 
+
+/* --------------------------------------------------
+   Rotten Tomatoes intro example toggles + pill expand
+-------------------------------------------------- */
+
+function setupRottenTomatoesIntro() {
+  const panel = document.getElementById("rt-example-panel");
+  const buttons = document.querySelectorAll(".rt-example-btn");
+  const pills = document.querySelectorAll(".rt-pill");
+
+  if (!panel || buttons.length === 0) return;
+
+  /* -------------------------
+     Example panel switching
+  --------------------------*/
+  function setExample(which) {
+    buttons.forEach(btn => btn.classList.toggle("active", btn.dataset.example === which));
+
+    if (which === "a") {
+      panel.innerHTML = `
+        <div class="rt-example-inner">
+          <div class="rt-example-title">
+            🍅 Example A · 99% Tomatometer = 99% Critics Score
+          </div>
+          <p>
+            Imagine 100 critics review a movie.
+            <strong>99 of them mark their review as “Fresh”</strong>, meaning they liked it.
+            Even if many of them only think the film is around a 7/10.
+          </p >
+          <p>
+            Rotten Tomatoes only checks whether each critic labels the review “Fresh” or “Rotten”.
+            It does <strong>not</strong> average their star ratings.  
+            A critic could give a movie 4/5 stars but still label it as Rotten, and that would be counted inside the 1% Rotten group.
+          </p >
+        </div>
+      `;
+    } else {
+      panel.innerHTML = `
+        <div class="rt-example-inner">
+          <div class="rt-example-title">
+            🍿 Example B · 50% Popcornmeter = 50% Audience Score
+          </div>
+          <p>
+            Imagine half the audience loves a movie and gives it 5/5,
+            and the other half dislikes it and gives it 2.5/5.
+            The <strong>average</strong> rating would be 3.75/5 (75%).
+          </p >
+          <p>
+            But on Rotten Tomatoes, only audience ratings above 3.5/5 count as “Fresh”.
+            So only half of these audience reviews qualify,
+            which results in a <strong>50% Audience Score</strong>.
+          </p >
+        </div>
+      `;
+    }
+  }
+
+  // default example
+  setExample("a");
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => setExample(btn.dataset.example));
+  });
+
+  /* --------------------------------------
+     Pill – only ONE expanded at a time
+  ----------------------------------------*/
+  pills.forEach(pill => {
+    pill.addEventListener("click", () => {
+      const isOpen = pill.classList.contains("expanded");
+
+      // 先收起所有 pill
+      pills.forEach(p => {
+        p.classList.remove("expanded");
+        p.querySelector(".expanded-text").style.display = "none";
+        p.querySelector(".default-text").style.display = "block";
+      });
+
+      // 若原本没开，则把当前这颗展开
+      if (!isOpen) {
+        const defaultText = pill.querySelector(".default-text");
+        const expandedText = pill.querySelector(".expanded-text");
+
+        expandedText.style.display = "block";
+        defaultText.style.display = "none";
+        pill.classList.add("expanded");
+      }
+    });
+  });
+}
+
+/* 点击空白处关闭所有 pill */
+document.addEventListener("click", (e) => {
+  // 如果点击位置不是 pill 内部
+  if (!e.target.closest(".rt-pill")) {
+    document.querySelectorAll(".rt-pill").forEach(p => {
+      p.classList.remove("expanded");
+      p.querySelector(".expanded-text").style.display = "none";
+      p.querySelector(".default-text").style.display = "block";
+    });
+  }
+});
+
+// run after everything is loaded
+window.addEventListener("load", setupRottenTomatoesIntro);
 
 //--------------------------------------------------
 // Q1: Genre Differences Bar Chart
 //--------------------------------------------------
-const margin1 = { top: 30, right: 20, bottom: 50, left: 70 },
+const margin1 = { top: 30, right: 20, bottom: 80, left: 70 },
   width1 = 420 - margin1.left - margin1.right,
   height1 = 350 - margin1.top - margin1.bottom;
 
@@ -500,17 +738,18 @@ d3.csv("data/imdb_tomatoes_oscar_genre_expanded.csv").then(data => {
 });
 
 
+
 //--------------------------------------------------
 // Scatterplot: Genre Exploration
 //--------------------------------------------------
-const marginScatter = { top: 50, right: 30, bottom: 50, left: 60 },
+const marginScatter = { top: 40, right: 30, bottom: 50, left: 70 },
   widthScatter = 420 - marginScatter.left - marginScatter.right,
-  heightScatter = 350 - marginScatter.top - marginScatter.bottom;
+  heightScatter = 380 - marginScatter.top - marginScatter.bottom;
 
 const svgScatter = d3.select("#chart-scatter-multi")
   .append("svg")
-  .attr("width", widthScatter + marginScatter.left + marginScatter.right)
-  .attr("height", heightScatter + marginScatter.top + marginScatter.bottom)
+  .attr("width", 420)
+  .attr("height", 380)
   .append("g")
   .attr("transform", `translate(${marginScatter.left},${marginScatter.top})`);
 
@@ -572,7 +811,18 @@ function updateScatterByGenre(selectedGenre) {
     .attr("font-size", "14px")
     .attr("fill", "#6F4E37")
     .attr("font-family", "Crimson Text, serif")
-    .text("Critics Score - Audience Score ( → Critics Like More )");
+    .text("Audiences Like More  ←        →     Critics Like More");
+
+  svg1.append("text")
+    .attr("x", width1 / 2)
+    .attr("y", height1 + 65)   // 第二行往下 20px
+    .attr("text-anchor", "middle")
+    .attr("font-size", "14px")
+    .attr("fill", "#6F4E37")
+    .attr("font-family", "Crimson Text, serif")
+    .text("Score Difference");
+
+
 
   svgScatter.append("line")
     .attr("x1", 0)
@@ -693,8 +943,10 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
     .y(d => y(d.audience_avg))
     .curve(d3.curveMonotoneX);
 
+
   svg2.append("path")
     .datum(yearly)
+    .attr("class", "rating-line critics-line")
     .attr("fill", "none")
     .attr("stroke", vintageColors.critic)
     .attr("stroke-width", 3)
@@ -702,10 +954,12 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
 
   svg2.append("path")
     .datum(yearly)
+    .attr("class", "rating-line audience-line")
     .attr("fill", "none")
     .attr("stroke", vintageColors.audience)
     .attr("stroke-width", 3)
     .attr("d", lineAudience);
+
 
   const focusCritic = svg2.append("g").style("display", "none");
   focusCritic.append("circle")
@@ -831,8 +1085,7 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
     .attr("text-anchor", "middle")
     .attr("font-weight", "bold")
     .attr("font-family", "Playfair Display, serif")
-    .attr("fill", "#8B4513")
-    .text("Average Ratings Over Time");
+    .attr("fill", "#8B4513");
 
   svg2.append("text")
     .attr("x", width2 / 2)
@@ -947,17 +1200,35 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
     // MAIN DRAW FUNCTION (RESPONSIVE)
     //--------------------------------------------------
     function drawVenn(topN) {
-      vennContainer.selectAll("svg").remove();
+      const container = d3.select("#venn");
+      const w = container.node().clientWidth;
 
-      // overall svg size
-      const W = window.innerWidth * 0.82;
-      const H = window.innerHeight * 0.82;
+      // if container is hidden, wait until it becomes visible
+      if (!w || w < 10) {
+        setTimeout(() => drawVenn(topN), 100);
+        return;
+      }
+
+      vennContainer.selectAll("svg").remove();
+      d3.selectAll(".venn-tooltip").remove();
+
+      // figure out available space from the center area
+      const containerEl = document.querySelector(".venn-center-area");
+      const availableWidth = containerEl ? containerEl.clientWidth * 0.95 : window.innerWidth * 0.7;
+      const availableHeight = containerEl ? containerEl.clientHeight : window.innerHeight * 0.6;
+      console.log("Available width:", window.innerWidth);
+      console.log("Available height:", window.innerHeight);
+
+      const W = availableWidth;
+      console.log("Venn width:", W);
+      const H = availableHeight;
+      console.log("Venn height:", H);
 
       const margin = {
-        top: 0.05 * H,
-        right: 0.1 * W,
-        bottom: 0.05 * H,
-        left: 0.1 * W
+        top: H * 0.15,
+        right: 20,
+        bottom: 20,
+        left: 20
       };
 
       const innerW = W - margin.left - margin.right;
@@ -969,40 +1240,43 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
         .attr("viewBox", `0 0 ${W} ${H}`)
         .attr("preserveAspectRatio", "xMidYMid meet");
 
+      // true visual center inside the svg (including margins)
+      const centerX = margin.left + innerW / 2;
       const centerY = margin.top + innerH / 2;
+      const adjustedCenterY = centerY - H * 0.1; // small nudge up
 
-      // font scaling (keep original range on normal windows, shrink on small)
-      let baseMaxFont = Math.max(18, Math.min(26, W / 65));
-      let baseMinFont = Math.max(8, Math.min(13, W / 180));
-      if (W < 900) {
-        const scale = W / 900; // < 1 on small screens
-        baseMaxFont = Math.max(10, baseMaxFont * scale);
-        baseMinFont = Math.max(6, baseMinFont * scale);
-      }
-      const maxFont = baseMaxFont;
-      const minFont = baseMinFont;
+      // font scaling
+      let maxFont = Math.max(9, Math.min(14, W / 50));
+      console.log("maxFont:", maxFont);
+      let minFont = Math.max(6, Math.min(10, W / 85));
+      console.log("minFont:", minFont);
+      //--------------------------------------------------
+      // radius / overlap
+      //--------------------------------------------------
+      const maxRadiusByHeight = innerH * 0.45;
+      const maxRadiusByWidth = innerW * 0.32;
+      const unifiedR = Math.max(40, Math.min(maxRadiusByHeight, maxRadiusByWidth));
 
-      //--------------------------------------------------
-      // CONSISTENT RADIUS: LIMITED BY BOTH HEIGHT & WIDTH
-      //--------------------------------------------------
-      const maxRadiusByHeight = (innerH - 40) / 2;
-      const maxRadiusByWidth = innerW * 0.3;  // since centers at 0.3 / 0.7 innerW
+      const circleSpacing = unifiedR * 1.1;
 
-      const unifiedR = Math.max(10, Math.min(maxRadiusByHeight, maxRadiusByWidth));
-
-      //--------------------------------------------------
-      // Circle centers – use innerW, then shift by margin
-      //--------------------------------------------------
       const centers = {
-        critic: { x: margin.left + innerW * 0.30, y: centerY },
-        audience: { x: margin.left + innerW * 0.70, y: centerY },
-        overlap: { x: margin.left + innerW * 0.50, y: centerY }
+        critic: {
+          x: centerX - circleSpacing / 2,
+          y: adjustedCenterY
+        },
+        audience: {
+          x: centerX + circleSpacing / 2,
+          y: adjustedCenterY
+        },
+        overlap: {
+          x: centerX,
+          y: adjustedCenterY
+        }
       };
-
       //--------------------------------------------------
-      // Region logic
+      // Region logic - adjusted for new spacing
       //--------------------------------------------------
-      const padFracCritic = 0.30;
+      const padFracCritic = 0.35;
       const padFracAudience = 0.35;
 
       function dist(pt, c) {
@@ -1013,8 +1287,8 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
       function inRegion(pt, regionKey) {
         const dCritic = dist(pt, centers.critic);
         const dAudience = dist(pt, centers.audience);
-        if (regionKey === "critic") return dCritic <= unifiedR && dAudience >= unifiedR * (1 + padFracCritic);
-        if (regionKey === "audience") return dAudience <= unifiedR && dCritic >= unifiedR * (1 + padFracAudience);
+        if (regionKey === "critic") return dCritic <= unifiedR * 0.92 && dAudience >= unifiedR * (1 + padFracCritic);
+        if (regionKey === "audience") return dAudience <= unifiedR * 0.92 && dCritic >= unifiedR * (1 + padFracAudience);
         if (regionKey === "overlap") return dCritic <= unifiedR && dAudience <= unifiedR;
         return false;
       }
@@ -1060,14 +1334,36 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
         .attr("class", "venn-tooltip")
         .style("position", "absolute")
         .style("visibility", "hidden")
-        .style("padding", "6px 10px")
-        .style("background", "rgba(0,0,0,0.7)")
-        .style("color", "white")
-        .style("border-radius", "4px")
-        .style("font-size", "12px")
+        .style("padding", "8px 12px")
+        .style("background", "linear-gradient(to bottom, #FFF8E7, #F5E6D3)")
+        .style("color", "#4A2C2A")
+        .style("border", "2px solid #8B4513")
+        .style("box-shadow", "0 4px 12px rgba(0,0,0,0.25)")
+        .style("font-size", "13px")
+        .style("font-family", "Crimson Text, serif")
         .style("pointer-events", "none")
-        .style("z-index", "10")
-        .style("transition", "opacity 0.2s");
+        .style("z-index", "9999")
+        .style("max-width", "260px");
+
+      //--------------------------------------------------
+      // Draw circles FIRST (behind text) — UPDATED
+      //--------------------------------------------------
+      svg.append("circle")
+        .attr("cx", centers.critic.x)
+        .attr("cy", centers.critic.y)
+        .attr("r", unifiedR)
+        .attr("fill", vintageColors.critic)
+        .attr("fill-opacity", 0.22)     // slightly stronger fill
+        .attr("stroke", "none");        // ⬅️ remove border
+
+      svg.append("circle")
+        .attr("cx", centers.audience.x)
+        .attr("cy", centers.audience.y)
+        .attr("r", unifiedR)
+        .attr("fill", vintageColors.audience)
+        .attr("fill-opacity", 0.22)
+        .attr("stroke", "none");        // ⬅️ remove border
+
 
       //--------------------------------------------------
       // WORD LAYOUT
@@ -1082,11 +1378,12 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
           ])
           .range([maxFont, minFont]);
 
-        // overlap: stacked vertically in center
+        // overlap: stacked vertically in center with more space
         if (regionKey === "overlap") {
-          const lineHeight = 1.3 * ((maxFont + minFont) / 2);
+          const avgFont = (maxFont + minFont) / 2;
+          const lineHeight = avgFont * 1.35;
           const totalHeight = lineHeight * movies.length;
-          const startY = centerY - totalHeight / 2 + lineHeight / 2;
+          const startY = adjustedCenterY - totalHeight / 2 + lineHeight / 2;
 
           svg.append("g").selectAll("text")
             .data(movies)
@@ -1099,33 +1396,38 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
             .attr("font-weight", () => randomWeight())
             .attr("font-style", () => randomStyle())
             .attr("fill", color)
+            .attr("cursor", "pointer")
             .text(d => d.title)
-            .on("mouseover", (e, d) => {
+            .on("mouseover", function (e, d) {
+              const year = d.release_year || '';
+              const criticScore = d.critic ? (d.critic * 100).toFixed(0) + '%' : '-';
+              const audScore = d.audience ? (d.audience * 100).toFixed(0) + '%' : '-';
+              d3.select(this).attr("opacity", 0.6).attr("font-weight", 700);
               tooltip
                 .style("visibility", "visible")
-                .style("opacity", "1")
-                .html(`<strong>${d.title}</strong><br>${regionKey}`);
+                .html(`<strong style="color:#8B4513;">${d.title}</strong>${year ? ' (' + year + ')' : ''}<br>
+                       <span style="color:#8B4513;">Critics:</span> ${criticScore} &nbsp;|&nbsp; 
+                       <span style="color:#D2691E;">Audience:</span> ${audScore}`);
             })
-            .on("mousemove", e => {
+            .on("mousemove", function (e) {
               tooltip
-                .style("top", (e.pageY - 35) + "px")
-                .style("left", (e.pageX + 10) + "px");
+                .style("top", (e.pageY - 45) + "px")
+                .style("left", (e.pageX + 12) + "px");
             })
-            .on("mouseout", () => {
-              tooltip
-                .style("visibility", "hidden")
-                .style("opacity", "0");
+            .on("mouseout", function () {
+              d3.select(this).attr("opacity", 1).attr("font-weight", null);
+              tooltip.style("visibility", "hidden");
             });
           return;
         }
 
         // critic-only / audience-only: spiral placement inside region
         const placed = [];
-        const step = 3;
+        const step = 4;
         const candidates = [];
 
-        for (let angle = 0; angle < 2 * Math.PI; angle += 0.05) {
-          for (let r = 0; r < unifiedR * 0.95; r += step) {
+        for (let angle = 0; angle < 2 * Math.PI; angle += 0.06) {
+          for (let r = 0; r < unifiedR * 0.9; r += step) {
             const pt = {
               x: centers[regionKey].x + r * Math.cos(angle),
               y: centers[regionKey].y + r * Math.sin(angle)
@@ -1137,26 +1439,25 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
 
         movies.forEach(movie => {
           const font = sizeScale(movie.title.length);
-          const textBox = { w: movie.title.length * font * 0.55, h: font };
+          const textBox = { w: movie.title.length * font * 0.5, h: font * 1.1 };
           let found = false;
 
           for (let pt of candidates) {
-            // clamp candidate so text box stays inside svg bounds
             const candidate = {
-              x: Math.max(textBox.w / 2, Math.min(W - textBox.w / 2, pt.x)),
-              y: Math.max(textBox.h / 2, Math.min(H - textBox.h / 2, pt.y))
+              x: Math.max(textBox.w / 2 + 3, Math.min(W - textBox.w / 2 - 3, pt.x)),
+              y: Math.max(textBox.h / 2 + 3, Math.min(H - textBox.h / 2 - 30, pt.y))
             };
 
             let valid = true;
             for (let p of placed) {
               const dx = p.x - candidate.x, dy = p.y - candidate.y;
-              if (Math.abs(dx) < (p.w + textBox.w) / 2 &&
-                Math.abs(dy) < (p.h + textBox.h) / 2) {
+              if (Math.abs(dx) < (p.w + textBox.w) / 2 + 1 &&
+                Math.abs(dy) < (p.h + textBox.h) / 2 + 1) {
                 valid = false; break;
               }
             }
             if (valid) {
-              placed.push({ ...candidate, ...textBox, font, text: movie.title });
+              placed.push({ ...candidate, ...textBox, font, text: movie.title, movie });
               found = true;
               break;
             }
@@ -1166,17 +1467,17 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
             let tries = 0, pt;
             do {
               pt = {
-                x: centers[regionKey].x + (Math.random() - 0.5) * unifiedR * 2,
-                y: centers[regionKey].y + (Math.random() - 0.5) * unifiedR * 2
+                x: centers[regionKey].x + (Math.random() - 0.5) * unifiedR * 1.7,
+                y: centers[regionKey].y + (Math.random() - 0.5) * unifiedR * 1.7
               };
               tries++;
-            } while (!inRegion(pt, regionKey) && tries < 50);
+            } while (!inRegion(pt, regionKey) && tries < 100);
 
             const candidate = {
-              x: Math.max(textBox.w / 2, Math.min(W - textBox.w / 2, pt.x)),
-              y: Math.max(textBox.h / 2, Math.min(H - textBox.h / 2, pt.y))
+              x: Math.max(textBox.w / 2 + 3, Math.min(W - textBox.w / 2 - 3, pt.x)),
+              y: Math.max(textBox.h / 2 + 3, Math.min(H - textBox.h / 2 - 30, pt.y))
             };
-            placed.push({ ...candidate, ...textBox, font, text: movie.title });
+            placed.push({ ...candidate, ...textBox, font, text: movie.title, movie });
           }
         });
 
@@ -1191,22 +1492,28 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
           .attr("font-weight", () => randomWeight())
           .attr("font-style", () => randomStyle())
           .attr("fill", color)
+          .attr("cursor", "pointer")
           .text(d => d.text)
-          .on("mouseover", (e, d) => {
+          .on("mouseover", function (e, d) {
+            const movieData = data.find(m => m.title === d.text);
+            const year = movieData ? movieData.release_year : '';
+            const criticScore = movieData ? (movieData.critic * 100).toFixed(0) + '%' : '-';
+            const audScore = movieData ? (movieData.audience * 100).toFixed(0) + '%' : '-';
+            d3.select(this).attr("opacity", 0.6).attr("font-weight", 700);
             tooltip
               .style("visibility", "visible")
-              .style("opacity", "1")
-              .html(`<strong>${d.text}</strong><br>${regionKey}`);
+              .html(`<strong style="color:#8B4513;">${d.text}</strong>${year ? ' (' + year + ')' : ''}<br>
+                     <span style="color:#8B4513;">Critics:</span> ${criticScore} &nbsp;|&nbsp; 
+                     <span style="color:#D2691E;">Audience:</span> ${audScore}`);
           })
-          .on("mousemove", e => {
+          .on("mousemove", function (e) {
             tooltip
-              .style("top", (e.pageY - 35) + "px")
-              .style("left", (e.pageX + 10) + "px");
+              .style("top", (e.pageY - 45) + "px")
+              .style("left", (e.pageX + 12) + "px");
           })
-          .on("mouseout", () => {
-            tooltip
-              .style("visibility", "hidden")
-              .style("opacity", "0");
+          .on("mouseout", function () {
+            d3.select(this).attr("opacity", 1).attr("font-weight", null);
+            tooltip.style("visibility", "hidden");
           });
       }
 
@@ -1218,23 +1525,58 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
       layoutWords(overlap, "overlap", vintageColors.overlap);
 
       //--------------------------------------------------
-      // Draw circles
+      // Circle labels below
       //--------------------------------------------------
-      svg.append("circle")
-        .attr("cx", centers.critic.x)
-        .attr("cy", centers.critic.y)
-        .attr("r", unifiedR)
+      svg.append("text")
+        .attr("class", "venn-circle-label")
+        .attr("x", centers.critic.x)
+        .attr("y", adjustedCenterY + unifiedR + innerHeight * 0.05)
+        .attr("text-anchor", "middle")
         .attr("fill", vintageColors.critic)
-        .attr("fill-opacity", 0.25)
-        .style("mix-blend-mode", "multiply");
+        .attr("font-family", "Playfair Display, serif")
+        .attr("font-weight", "700")
+        .attr("font-size", "13px")
+        .text("Critics' Top " + topN);
 
-      svg.append("circle")
-        .attr("cx", centers.audience.x)
-        .attr("cy", centers.audience.y)
-        .attr("r", unifiedR)
+      svg.append("text")
+        .attr("class", "venn-circle-label")
+        .attr("x", centers.audience.x)
+        .attr("y", adjustedCenterY + unifiedR + innerHeight * 0.05)
+        .attr("text-anchor", "middle")
         .attr("fill", vintageColors.audience)
-        .attr("fill-opacity", 0.25)
-        .style("mix-blend-mode", "multiply");
+        .attr("font-family", "Playfair Display, serif")
+        .attr("font-weight", "700")
+        .attr("font-size", "13px")
+        .text("Audience's Top " + topN);
+
+      //--------------------------------------------------
+      // Update overlap count in sidebar
+      //--------------------------------------------------
+      const overlapCount = overlap.length;
+      d3.select("#overlap-count").text(overlapCount);
+
+      //--------------------------------------------------
+      // Update takeaway text based on slider value
+      //--------------------------------------------------
+      const takeawayEl = d3.select("#venn-takeaway");
+      let takeawayText = "";
+
+      if (overlapCount === 0) {
+        takeawayText = `At <strong>Top ${topN}</strong>, there is <strong>no overlap</strong>. They favor <strong>completely different films</strong>.`;
+      } else if (overlapCount === 1) {
+        const overlapTitle = overlap[0] ? overlap[0].title : "one film";
+        takeawayText = `At <strong>Top ${topN}</strong>, only <strong>1 film</strong> overlaps: <em>${overlapTitle}</em>. Very different tastes!`;
+      } else if (overlapCount <= 5) {
+        takeawayText = `At <strong>Top ${topN}</strong>, only <strong>${overlapCount} films</strong> overlap. Critics and audiences favor <strong>mostly different films</strong>.`;
+      } else if (overlapCount <= 15) {
+        takeawayText = `At <strong>Top ${topN}</strong>, <strong>${overlapCount} films</strong> overlap. Some agreement, but preferences remain <strong>largely distinct</strong>.`;
+      } else {
+        const overlapPct = ((overlapCount / topN) * 100).toFixed(0);
+        takeawayText = `At <strong>Top ${topN}</strong>, <strong>${overlapCount} films (${overlapPct}%)</strong> overlap. More alignment as the list expands.`;
+      }
+
+      takeawayEl.html(`<p takeaways-box vintage-card>"Top" means the movies ranked highest by either critics’ or audience score. 
+        Critics’ top ${topN} uses critic scores, and Audience’s top ${topN} uses audience scores. <br>${takeawayText}</p>`);
     }
 
     //--------------------------------------------------
@@ -1264,6 +1606,7 @@ d3.csv("data/imdb_tomatoes_oscar.csv").then(data => {
     });
   });
 })();
+
 
 //--------------------------------------------------
 // Movie Recommendation Tool
@@ -1390,9 +1733,42 @@ function initMovieRecommendationTool() {
       svg.selectAll("*").remove();
 
       const x = d3.scaleLinear().domain([0, 1]).range([mg.left, W - mg.right]);
-      const y = d3.scaleLinear().domain([0, 1]).range([H - mg.bottom, mg.top]);
+      const y = d3.scaleLinear().range([H - mg.bottom, mg.top]);
 
-      const barsG = svg.append("g").attr("class", "bars");
+      // ✅ 一次性绘制完整分布（不再动态更新）
+      const barsG = svg.append("g").attr("class", "bars-bg");
+      const allVals = data.map(accessor).filter(v => !isNaN(v));
+      const binGen = d3.bin().domain(x.domain()).thresholds(25);
+      const bins = binGen(allVals);
+      y.domain([0, d3.max(bins, b => b.length)]);
+
+      barsG.selectAll("rect")
+        .data(bins)
+        .enter()
+        .append("rect")
+        .attr("x", d => x(d.x0))
+        .attr("y", d => y(d.length))
+        .attr("width", d => Math.max(0, x(d.x1) - x(d.x0) - 1))
+        .attr("height", d => y(0) - y(d.length))
+        .attr("fill", "#C9A55B")
+        .attr("opacity", 0.8);
+      const brushG = svg.append("g").attr("class", "brush-layer");   // 专门放 brush
+
+
+      // ✅ 添加轻量提示文字
+      // ✅ 提示文字：放在 x 轴正下方
+      svg.append("text")
+        .attr("class", "hint-text")
+        .attr("x", W / 2)
+        .attr("y", H - mg.bottom + 26) // ← 放在坐标轴下方一点
+        .attr("text-anchor", "middle")
+        .attr("fill", "black") // 深棕色，与标题风格一致
+        .attr("font-size", 11)
+        .attr("font-family", "Crimson Text, serif")
+        .attr("opacity", 0.6)
+        .text("💡 Drag or resize the box above to filter");
+
+
       svg.append("g")
         .attr("transform", "translate(0," + (H - mg.bottom) + ")")
         .call(d3.axisBottom(x).ticks(5))
@@ -1416,30 +1792,7 @@ function initMovieRecommendationTool() {
       svg.append("g").attr("class", "brush").call(brush);
 
       function update(vals) {
-        vals = vals.filter(v => !isNaN(v)).map(v => +v);
-        if (vals.length === 0) {
-          barsG.selectAll("rect").remove();
-          y.domain([0, 1]);
-          return;
-        }
-        const binGen = d3.bin().domain(x.domain()).thresholds(25).value(d => Math.max(0, Math.min(1, d)));
-        const bins = binGen(vals);
 
-        y.domain([0, d3.max(bins, b => b.length)]);
-        const rects = barsG.selectAll("rect").data(bins);
-        rects.exit().remove();
-        rects.enter().append("rect")
-          .attr("x", d => x(d.x0))
-          .attr("y", d => y(d.length))
-          .attr("width", d => Math.max(0, x(d.x1) - x(d.x0) - 1))
-          .attr("height", d => y(0) - y(d.length))
-          .attr("fill", vintageColors.positive)
-          .merge(rects)
-          .transition().duration(250)
-          .attr("x", d => x(d.x0))
-          .attr("y", d => y(d.length))
-          .attr("width", d => Math.max(0, x(d.x1) - x(d.x0) - 1))
-          .attr("height", d => y(0) - y(d.length));
       }
 
       return { x, update, svg, brush, setBrush: (b) => { svg.select(".brush").call(brush.move, b ? [x(b[0]), x(b[1])] : null); } };
@@ -1455,56 +1808,104 @@ function initMovieRecommendationTool() {
       else { audBrushRange = null; d3.select("#audLabel").text("All"); d3.select("#audSummary").text("All"); }
     });
 
-    const tW = 1000, tH = 420, tMg = { left: 60, right: 40, top: 20, bottom: 50 };
-    const tSvg = d3.select("#timeline");
+
+
+
+    // ✅ 外层滚动容器
+    //--------------------------------------------------
+    // ✅ 改进版 Timeline（含横向滚动与缩放）
+    //--------------------------------------------------
+
+    const tW = 1200; // 宽一点，确保有可滚动空间
+    const tH = 420, tMg = { left: 60, right: 100, top: 20, bottom: 20 };
+
+    // 选中 SVG 并设置尺寸
+    const tSvg = d3.select("#timeline")
+      .attr("width", tW)
+      .attr("height", tH);
+
+    // 设置外层容器滚动行为
+    d3.select("#timeline-wrap")
+      .style("overflow-x", "auto")
+      .style("overflow-y", "hidden")
+      .style("width", "100%")
+      .style("border", "none")
+      .style("background", "#F5E6D3");
+
     tSvg.selectAll("*").remove();
 
-    const years = data.map(d => d.release_year);
-    const x = d3.scaleLinear().domain([d3.min(years) - 1, d3.max(years) + 1]).range([tMg.left, tW - tMg.right]);
+    // 计算年份范围
+    const years = data.map(d => d.release_year).filter(y => !isNaN(y));
+    const yearMin = d3.min(years);
+    const yearMax = d3.max(years);
 
-    const first5 = Math.floor(d3.min(years) / 5) * 5;
-    const last5 = Math.ceil(d3.max(years) / 5) * 5;
+    // 定义比例尺与 X 轴
+    const x = d3.scaleLinear()
+      .domain([yearMin, 1965, yearMax])
+      .range([tMg.left, tMg.left + (tW - tMg.left - tMg.right) * 0.15, tW - tMg.right]);
+
+
+    // 自定义刻度：1915–1965 每 10 年；1965–yearMax 每 5 年
+    const ticks = [
+      ...d3.range(1915, 1970, 20),   // 1915, 1925, 1935, ..., 1965
+      ...d3.range(1970, yearMax + 1, 5) // 1970, 1975, ..., 2025
+    ];
+
+    const xAxis = d3.axisBottom(x)
+      .tickValues(ticks)
+      .tickFormat(d3.format("d"));
+
+
+    // ✅ 先画背景条
+    const first5 = Math.floor(yearMin / 5) * 5;
+    const last5 = Math.ceil(yearMax / 5) * 5;
     const bands = d3.range(first5, last5 + 1, 5);
-    tSvg.append("g").selectAll("rect.band")
-      .data(bands)
-      .join("rect")
-      .attr("x", d => x(d - 2.5))
-      .attr("y", 0)
-      .attr("width", d => Math.max(1, x(d + 2.5) - x(d - 2.5)))
-      .attr("height", tH)
-      .attr("fill", "#EBD9C5");
 
+
+
+    // ✅ 再画 X 轴（置顶，避免被覆盖）
     tSvg.append("g")
-      .attr("transform", "translate(0," + (tH - tMg.bottom) + ")")
-      .call(d3.axisBottom(x).ticks(10).tickFormat(d3.format("d")))
+      .attr("class", "x-axis")
+      .attr("transform", `translate(0,${tH - tMg.bottom})`)
+      .call(xAxis)
+      .raise() // ⬅️ 关键：把轴线提升到最上层
       .selectAll("text")
       .style("fill", "#6F4E37")
       .style("font-family", "Crimson Text, serif");
 
+    // ✅ 气泡层
     const bubbleG = tSvg.append("g").attr("class", "bubbles");
     const rScale = d3.scaleLinear().domain([0, 1]).range([6, 10]);
 
+    function yearToX(year) {
+      return x(Math.max(yearMin, Math.min(yearMax, year)));
+    }
+
+    // ✅ updateAll
     function updateAll() {
       const selGenre = d3.select("#genre").property("value");
 
       let pool = data.filter(d => d.votes >= voteRange[0] && d.votes <= voteRange[1]);
-
       if (selGenre !== "All") pool = pool.filter(d => d.genre && d.genre.includes(selGenre));
-
       if (critBrushRange) pool = pool.filter(d => d.critic_score >= critBrushRange[0] && d.critic_score <= critBrushRange[1]);
       if (audBrushRange) pool = pool.filter(d => d.audience_score >= audBrushRange[0] && d.audience_score <= audBrushRange[1]);
 
-      d3.select("#counts").text(pool.length);
+      d3.select("#counts-box").text(pool.length);
 
       pool.forEach(d => d.avg = (d.critic_score + d.audience_score) / 2);
-
       const shown = pool.slice().sort((a, b) => b.votes - a.votes).slice(0, 1000);
 
       const nodes = bubbleG.selectAll("g.movie").data(shown, d => d.movie_id);
       nodes.exit().transition().duration(150).style("opacity", 0).remove();
 
-      const enter = nodes.enter().append("g").attr("class", "movie")
-        .attr("transform", d => "translate(" + x(d.release_year) + "," + (tMg.top + Math.random() * (tH - tMg.top - tMg.bottom)) + ")")
+      const enter = nodes.enter()
+        .append("g")
+        .attr("class", "movie")
+        .attr("transform", d => {
+          const year = Math.max(yearMin, Math.min(yearMax, d.release_year));
+          d._y = tMg.top + Math.random() * (tH - tMg.top - tMg.bottom);
+          return "translate(" + x(year) + "," + d._y + ")";
+        })
         .style("opacity", 0);
 
       enter.append("circle")
@@ -1524,35 +1925,74 @@ function initMovieRecommendationTool() {
         );
 
       const all = enter.merge(nodes);
-      all.transition().duration(350).attr("transform", d => "translate(" + x(d.release_year) + "," + (tMg.top + Math.random() * (tH - tMg.top - tMg.bottom)) + ")").style("opacity", 1);
+      all.transition().duration(350)
+        .attr("transform", d => {
+          const year = Math.max(yearMin, Math.min(yearMax, d.release_year));
+          return "translate(" + x(year) + "," + (d._y || tMg.top + Math.random() * (tH - tMg.top - tMg.bottom)) + ")";
+        })
+        .style("opacity", 1);
       all.select("circle").transition().duration(350).attr("r", d => rScale(d.avg));
 
+      // ✅ Tooltip逻辑保持不变
+      let lockedMovie = null;
       all.on("mouseover", (event, d) => {
-        tooltip.style("opacity", 1).style("visibility", "visible").style("left", (event.pageX + 10) + "px").style("top", (event.pageY + 8) + "px")
-          .html("<b>" + (d.movie_name || "") + "</b><br/>Year: " + d.release_year + "<br/>Critic: " + (isFinite(d.critic_score) ? d.critic_score.toFixed(2) : '-') + " Audience: " + (isFinite(d.audience_score) ? d.audience_score.toFixed(2) : '-') + "<br/>Votes: " + fmt(d.votes));
-        const html = "<div style=\"font-weight:700; color:#8B4513; font-family: Playfair Display, serif;\">" + (d.movie_name || "") + "</div>" +
-          "<div style=\"font-size:13px;color:#4A2C2A;margin-top:8px\"> <b>Year:</b> " + d.release_year + " &nbsp; <b>Votes:</b> " + fmt(d.votes) +
-          "<br/> <b>Critic:</b> " + d.critic_score + " &nbsp; <b>Audience:</b> " + d.audience_score + " &nbsp; <b>Avg:</b> " + (d.avg ? d.avg.toFixed(3) : '-') +
-          "<br/> <b>Genre:</b> " + (d.genre || "-") + "<br/> <b>Director:</b> " + (d.director || "-") + " &nbsp; <b>Runtime:</b> " + (d.runtime || "-") +
-          "<br/> <b>Certificate:</b> " + (d.certificate || "-") + " &nbsp; <b>Rating:</b> " + (d.rating || "-") +
-          "<br/> <b>Gross:</b> " + (d.gross || "-") +
-          "<br/><div style=\"margin-top:8px;color:#4A2C2A\"><b>Description:</b><div style=\"margin-top:6px;color:#6F4E37\">" + ((d.description || "").slice(0, 800)) + "</div></div></div>";
-        d3.select("#detailContent").html(html);
-      }).on("mousemove", (event) => {
-        tooltip.style("left", (event.pageX + 10) + "px").style("top", (event.pageY + 8) + "px");
-      }).on("mouseout", () => {
-        tooltip.style("opacity", 0).style("visibility", "hidden");
-      });
+        tooltip
+          .style("opacity", 1)
+          .style("visibility", "visible")
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY + 8) + "px")
+          .html(
+            `<b>${d.movie_name || ""}</b><br/>
+        Year: ${d.release_year}<br/>
+        Critic: ${isFinite(d.critic_score) ? d.critic_score.toFixed(2) : "-"}
+        &nbsp; Audience: ${isFinite(d.audience_score) ? d.audience_score.toFixed(2) : "-"}<br/>
+        Votes: ${fmt(d.votes)}`
+          );
+      })
+        .on("mousemove", (event) => {
+          tooltip.style("left", (event.pageX + 10) + "px").style("top", (event.pageY + 8) + "px");
+        })
+        .on("mouseout", () => tooltip.style("opacity", 0).style("visibility", "hidden"))
+        .on("click", (event, d) => {
+          if (lockedMovie && lockedMovie.movie_id === d.movie_id) {
+            lockedMovie = null;
+            d3.select("#detailContent").html("<i>Hovered movie details</i>");
+          } else {
+            lockedMovie = d;
+            const html = `
+          <div style="font-weight:700; color:#8B4513; font-family: Playfair Display, serif;">
+            ${d.movie_name || ""}
+          </div>
+          <div style="font-size:13px;color:#4A2C2A;margin-top:8px">
+            <b>Year:</b> ${d.release_year} &nbsp; <b>Votes:</b> ${fmt(d.votes)}<br/>
+            <b>Critic:</b> ${d.critic_score} &nbsp; <b>Audience:</b> ${d.audience_score} &nbsp; 
+            <b>Avg:</b> ${(d.avg ? d.avg.toFixed(3) : "-")}<br/>
+            <b>Genre:</b> ${d.genre || "-"}<br/>
+            <b>Director:</b> ${d.director || "-"} &nbsp; <b>Runtime:</b> ${d.runtime || "-"}<br/>
+            <b>Certificate:</b> ${d.certificate || "-"} &nbsp; <b>Rating:</b> ${d.rating || "-"}<br/>
+            <b>Gross:</b> ${d.gross || "-"}<br/>
+            <div style="margin-top:8px;color:#4A2C2A">
+              <b>Description:</b>
+              <div style="margin-top:6px;color:#6F4E37">
+                ${(d.description || "").slice(0, 800)}
+              </div>
+            </div>
+          </div>`;
+            d3.select("#detailContent").html(html);
+          }
+        });
 
       renderTopTable(pool);
-
-      d3.select("#voteSummary").text(voteRange[0] === d3.min(data, d => d.votes) && voteRange[1] === d3.max(data, d => d.votes) ? "All" : (fmt(voteRange[0]) + " — " + fmt(voteRange[1])));
+      d3.select("#voteSummary").text(voteRange[0] === d3.min(data, d => d.votes) && voteRange[1] === d3.max(data, d => d.votes)
+        ? "All"
+        : (fmt(voteRange[0]) + " — " + fmt(voteRange[1])));
       d3.select("#critSummary").text(critBrushRange ? fmtDecimal(critBrushRange[0]) + " — " + fmtDecimal(critBrushRange[1]) : "All");
       d3.select("#audSummary").text(audBrushRange ? fmtDecimal(audBrushRange[0]) + " — " + fmtDecimal(audBrushRange[1]) : "All");
 
       criticHist.update(pool.map(d => d.critic_score));
       audHist.update(pool.map(d => d.audience_score));
     }
+
 
     function renderTopTable(pool) {
       const topN = +d3.select("#topN").property("value");
@@ -1601,12 +2041,100 @@ function initMovieRecommendationTool() {
     d3.select("#audSummary").text("All");
 
     voteRange = [d3.min(data, d => d.votes), d3.max(data, d => d.votes)];
-
     updateAll();
+
+    // --------------------------------------------------------------
+    //  页面首次绘制完后再加初始 brush（Critic / Audience / Votes）
+    // --------------------------------------------------------------
+    setTimeout(() => {
+
+      // -----------------------------
+      // ⭐ 1. Critic 初始框选：0.4–0.6
+      // -----------------------------
+      const initialCritRange = [0.4, 0.6];
+      critBrushRange = initialCritRange;
+      criticHist.setBrush(initialCritRange);
+      d3.select("#critLabel").text(initialCritRange.map(v => v.toFixed(1)).join(" — "));
+      d3.select("#critSummary").text(initialCritRange[0].toFixed(1));
+
+
+      // -----------------------------
+      // ⭐ 2. Audience 初始框选：0.3–0.5
+      // -----------------------------
+      const initialAudRange = [0.3, 0.5];
+      audBrushRange = initialAudRange;
+      audHist.setBrush(initialAudRange);
+      d3.select("#audLabel").text(initialAudRange.map(v => v.toFixed(1)).join(" — "));
+      d3.select("#audSummary").text(initialAudRange[0].toFixed(1));
+
+
+      // -----------------------------
+      // ⭐ 3. Vote 初始框选：中间 30%–70%
+      // -----------------------------
+      const allVotes = data.map(d => d.votes).filter(v => v > 0).sort((a, b) => a - b);
+      const voteLow = allVotes[Math.floor(allVotes.length * 0.3)];
+      const voteHigh = allVotes[Math.floor(allVotes.length * 0.7)];
+
+      voteRange = [voteLow, voteHigh];
+      d3.select("#voteLabel").text(`${fmt(voteLow)} — ${fmt(voteHigh)}`);
+
+      // --- brush Y scale ---
+      const yScale = d3.scaleLinear()
+        .domain([Math.log10(minVote), Math.log10(maxVote)])
+        .range([vMg.top + 10, vH - vMg.bottom]);
+
+      const voteBrushG = d3.select("#voteSvg").select(".brush");
+
+      const yTop = yScale(Math.log10(voteLow));     // 小 vote（高）
+      const yBottom = yScale(Math.log10(voteHigh)); // 大 vote（低）
+
+      // ⭐ 使用全局 voteBrush 移动 brush
+      voteBrushG.call(voteBrush.move, [yTop, yBottom]);
+
+      // ⭐ 把 brush 提到最上层
+      voteBrushG.raise();
+
+
+      // -----------------------------
+      // ⭐ 4. 添加 “Drag the box…” 提示（需放在 brush 后面 append!!!）
+      // -----------------------------
+      const hint = voteSvg.append("text")
+        .attr("class", "hint-text-vote")
+        .attr("x", vW - 15)
+        .attr("y", vH - 5)
+        .attr("text-anchor", "end")
+        .attr("fill", "black")
+        .attr("font-size", 11)
+        .attr("font-family", "Crimson Text, serif")
+        .attr("opacity", 0.9)
+        .text("💡 Drag the box to filter votes");
+
+      // ⭐⭐ 必须在 append 后再 raise，否则无效！
+      hint.raise();
+
+
+      // -----------------------------
+      // ⭐ 5. 强制刷新一次，让初始 brush 生效
+      // -----------------------------
+      updateAll();
+
+
+      // -----------------------------
+      // ⭐ 6. 美化 brush selection
+      // -----------------------------
+      d3.selectAll(".brush .selection")
+        .attr("fill", "#C19A6B")
+        .attr("fill-opacity", 0.28)
+        .attr("stroke", "#6F4E37")
+        .attr("stroke-width", 1.1);
+
+    }, 300);
+
   });
 }
 
 initMovieRecommendationTool();
+
 
 //--------------------------------------------------
 // 🔵 Page Dots Navigation — auto highlight + click jump
@@ -1647,4 +2175,126 @@ document.addEventListener("DOMContentLoaded", () => {
     dots.forEach(dot => dot.classList.remove("active"));
     if (dots[currentPage]) dots[currentPage].classList.add("active");
   });
+});
+
+
+// ========================================================
+// 🎬 Page 4: Interactive Divergent Movies
+// ========================================================
+
+document.addEventListener('DOMContentLoaded', function () {
+  // Animate bars when page becomes visible
+  function animateDivergentBars() {
+    const page4 = document.getElementById('page4').scrollIntoView({ behavior: "smooth" });
+    if (!page4 || page4.classList.contains('hidden')) return;
+
+    const barFills = page4.querySelectorAll('.bar-fill');
+    barFills.forEach(bar => {
+      const targetWidth = bar.getAttribute('data-width');
+      // Set width directly with inline style
+      setTimeout(() => {
+        bar.style.width = targetWidth + '%';
+        bar.classList.add('animated');
+      }, 300);
+    });
+  }
+
+  // Observer to detect when page 4 becomes visible
+  const page4Observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !entry.target.classList.contains('hidden')) {
+        animateDivergentBars();
+      }
+    });
+  }, { threshold: 0.3 });
+
+  const page4 = document.getElementById('page4');
+  if (page4) {
+    page4Observer.observe(page4);
+  }
+
+  // Toggle "Why the split?" sections
+  const toggleButtons = document.querySelectorAll('.why-split-toggle');
+  toggleButtons.forEach(button => {
+    button.addEventListener('click', function (e) {
+      e.stopPropagation();
+
+      // Find the content that comes right after THIS button
+      const content = this.nextElementSibling;
+      const isExpanded = content.classList.contains('expanded');
+
+      if (isExpanded) {
+        // Collapse this section
+        content.classList.remove('expanded');
+        this.classList.remove('active');
+        this.innerHTML = 'Why the split? ▼';
+      } else {
+        // Expand this section
+        content.classList.add('expanded');
+        this.classList.add('active');
+        this.innerHTML = 'Why the split? ▲';
+      }
+    });
+  });
+});
+
+// Only show bottom-fixed when page9 is in viewport
+function updateBottomFixed() {
+  const bottom = document.querySelector(".bottom-fixed");
+  const page9 = document.getElementById("page9");
+  if (!bottom || !page9) return;
+
+  const rect = page9.getBoundingClientRect();
+
+  const inView =
+    rect.top < window.innerHeight * 0.6 &&
+    rect.bottom > window.innerHeight * 0.4;
+
+  bottom.style.display = inView ? "flex" : "none";
+}
+
+// Listen on scroll + load
+window.addEventListener("scroll", updateBottomFixed);
+window.addEventListener("load", updateBottomFixed);
+
+
+function handlePage8Video() {
+  const page8 = document.getElementById("page8");
+  const vidContainer = document.getElementById("page8-video-container");
+  const rect = page8.getBoundingClientRect();
+
+  const inView = rect.top < window.innerHeight * 0.6 &&
+    rect.bottom > window.innerHeight * 0.4;
+
+  if (inView) {
+    vidContainer.style.opacity = "0.9";   // 淡入
+  } else {
+    vidContainer.style.opacity = "0";     // 淡出
+  }
+}
+
+window.addEventListener("scroll", handlePage8Video);
+window.addEventListener("load", handlePage8Video);
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const page6 = document.getElementById("page6");
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+
+        // 🟠 激活动画 —— 给 path 加 .animate
+        document.querySelectorAll("#chart-q2 .rating-line")
+          .forEach(line => line.classList.add("animate"));
+
+        // 为了避免反复播放，播放一次后停止监听
+        observer.unobserve(page6);
+      }
+    });
+  }, {
+    threshold: 0.4
+  });
+
+  observer.observe(page6);
 });
