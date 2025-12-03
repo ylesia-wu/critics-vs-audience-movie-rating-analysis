@@ -719,7 +719,7 @@ h2 {
 /*  🎬 Movie Recommendation Explorer (Dashboard)            */
 /* ========================================================= */
 
-#page7,
+#page10,
 #recommendation-tool-container {
   font-family: 'Crimson Text', serif;
   background: var(--vintage-cream);
@@ -1013,7 +1013,7 @@ th {
 }
 
 
-#page6 {
+#page7 {
   text-align: center;
   padding-top: 10vh;
 
@@ -1042,7 +1042,7 @@ th {
 
 
 /* ===== PAGE 3: Compact Layout - Fits One Screen ===== */
-#page3 {
+#page4 {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1052,11 +1052,11 @@ th {
   box-sizing: border-box;
 }
 
-#page3 .page-header {
+#page4 .page-header {
   margin-bottom: 1vh;
 }
 
-#page3 .section-desc {
+#page4 .section-desc {
   margin: 0 auto 2vh auto;
   line-height: 1.5;
 }
@@ -1090,13 +1090,13 @@ th {
   margin-top: 0.6vh;
 }
 
-#page3 .story-paragraph {
+#page4 .story-paragraph {
   margin: 1.5vh auto 0 auto;
   font-size: clamp(0.9rem, 1vw, 1rem);
   line-height: 1.6;
 }
 
-#page3 .vintage-button {
+#page4 .vintage-button {
   margin-top: 1.5vh;
 }
 
@@ -1308,18 +1308,18 @@ th {
 /* ========================================================= */
 
 
-#page4 {
+#page5 {
   padding-top: 30px;
   padding-bottom: 30px;
 }
 
 
-#page4 .page-header {
+#page5 .page-header {
   margin-bottom: 10px;
 }
 
 
-#page4 .page-header h1 {
+#page5 .page-header h1 {
   margin-top: 20px;
   font-size: 2rem;
 }
@@ -1445,13 +1445,13 @@ th {
 /* ========================================================= */
 
 
-#page3 {
+#page4 {
   padding-top: 20px;
   padding-bottom: 20px;
 }
 
 
-#page3 .page-header {
+#page4 .page-header {
   margin-bottom: 10px;
 }
 
@@ -1588,7 +1588,7 @@ th {
 
 
 /* Center Page 3 content vertically */
-#page3 {
+#page4 {
   flex-direction: column;
   justify-content: center;
   /* vertical centering */
@@ -1611,18 +1611,18 @@ th {
 /* ========================================================= */
 
 
-#page4 {
+#page5 {
   padding: 15px 20px 20px 20px;
   min-height: auto;
 }
 
 
-#page4 .page-header {
+#page5 .page-header {
   margin-bottom: 5px;
 }
 
 
-#page4 .page-header h1 {
+#page5 .page-header h1 {
   margin-top: 10px;
   font-size: 1.8rem;
 }
@@ -2309,7 +2309,7 @@ svg text {
 }
 
 
-#page9 {
+#page10 {
   padding-bottom: 230px;
   /* 可调 */
 }
@@ -2377,18 +2377,18 @@ svg text {
 /* ============================
    Page 5: Venn layout refresh
    ============================ */
-#page5 .venn-top-control {
+#page6 .venn-top-control {
   display: flex;
   justify-content: center;
   margin: 6px auto 10px;
 }
 
-#page5 .venn-top-control .venn-control-box {
+#page6 .venn-top-control .venn-control-box {
   max-width: 260px;
   width: 100%;
 }
 
-#page5 .venn-full-layout {
+#page6 .venn-full-layout {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2398,7 +2398,7 @@ svg text {
   margin: 0 auto;
 }
 
-#page5 .venn-center-area {
+#page6 .venn-center-area {
   flex: 0 0 auto;
   width: 100%;
   max-width: 900px;
@@ -2406,18 +2406,18 @@ svg text {
   min-height: 320px;
 }
 
-#page5 #venn {
+#page6 #venn {
   width: 100%;
   height: 100%;
 }
 
-#page5 .takeaways-box-compact {
+#page6 .takeaways-box-compact {
   margin-top: 0;
 }
 
 
 /* Make top slider stretch wide and remove box */
-#page5 .venn-top-control {
+#page6 .venn-top-control {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -2484,7 +2484,263 @@ svg text {
 }
 
 /* ====== Make Page 8 more compact ====== */
-#page8 {
+#page9 {
   min-height: auto !important;
   padding: 200px 20px !important;
+}
+
+
+/* ====== Make Page 8 more compact ====== */
+#page9 {
+  min-height: auto !important;
+  padding: 120px 10px !important;
+}
+
+
+#page8-video-container,
+#page8-video,
+#page9 .load-more {
+  position: static !important;
+}
+
+#page8-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+
+/* ==============================
+   PAGE 3 – TIMELINE YEAR SLIDER
+   ============================== */
+
+.timeline-year-slider {
+  -webkit-appearance: none;
+  width: 260px;
+  /* 比默认更粗细、视觉更平衡 */
+  height: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  background: linear-gradient(to right,
+      #d27a34,
+      #c46a2d,
+      #8b4a23);
+  /* 胶片橙到深棕 */
+  outline: none;
+  margin: 0 10px;
+  border: 1.5px solid #8B6F62;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* ==== WebKit Thumb (Chrome/Safari) ==== */
+.timeline-year-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #8B4513;
+  /* Saddle brown */
+  border-radius: 50%;
+  border: 2px solid #f4e2c6;
+  /* 奶油金边，复古感 */
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.45);
+  transition: transform 0.2s ease;
+}
+
+.timeline-year-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.18);
+}
+
+/* ==== Firefox Thumb ==== */
+.timeline-year-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: #8B4513;
+  border-radius: 50%;
+  border: 2px solid #f4e2c6;
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.45);
+  transition: transform 0.2s ease;
+}
+
+.timeline-year-slider::-moz-range-thumb:hover {
+  transform: scale(1.18);
+}
+
+/* ==== Label next to slider ==== */
+.year-range-label-p3 {
+  font-family: "Crimson Text", serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #8B6F62;
+  padding-left: 6px;
+}
+
+/* ==============================
+   PAGE 3 – STREAMGRAPH STYLES
+   ============================== */
+
+.timeline-year-slider {
+  -webkit-appearance: none;
+  width: 260px;
+  height: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  background: linear-gradient(to right, #d27a34, #8b4a23);
+  outline: none;
+  margin: 0 10px;
+  border: 1px solid #8B6F62;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.timeline-year-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #8B4513;
+  border-radius: 50%;
+  border: 2px solid #f4e2c6;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+  transition: transform 0.1s;
+}
+
+.timeline-year-slider::-webkit-slider-thumb:hover {
+  transform: translateY(-1px) scale(1.2);
+}
+
+.year-range-label-p3 {
+  font-family: "Crimson Text", serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #D2691E;
+  min-width: 50px;
+  display: inline-block;
+}
+
+/* Legend Dots */
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #5a463d;
+  font-weight: 600;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* SVG Styles */
+.stream-layer {
+  opacity: 0.9;
+  transition: opacity 0.3s;
+}
+
+.stream-layer:hover {
+  opacity: 1;
+}
+
+/* The vertical line following the slider */
+.cursor-line {
+  stroke: #5a463d;
+  stroke-width: 1.5px;
+  stroke-dasharray: 4 2;
+  pointer-events: none;
+}
+
+/* The overlay that dims the future */
+.future-overlay {
+  fill: #f4e2c6;
+  /* Page background color */
+  opacity: 0.65;
+  /* How much to dim the future */
+  pointer-events: none;
+}
+
+
+
+/* --- Page 1 Animations --- */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulseSoft {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(139, 69, 19, 0.4);
+  }
+
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(139, 69, 19, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(139, 69, 19, 0);
+  }
+}
+
+.slide-in-left {
+  animation: slideInLeft 1s ease forwards;
+}
+
+.slide-in-right {
+  animation: slideInRight 1s ease forwards;
+}
+
+.pulse-btn {
+  animation: fadeUp 1s ease forwards 1.6s, pulseSoft 2s infinite 2.5s;
+}
+
+.hero-title {
+  font-family: 'Courier Prime', serif;
+  /* Or your main font */
+  letter-spacing: -1px;
 }

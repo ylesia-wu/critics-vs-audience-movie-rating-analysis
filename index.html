@@ -19,24 +19,43 @@
 
   <div id="container">
 
-    <!-- PAGE 1: Title Page -->
-    <section class="page" id="page1">
+<!-- PAGE 1: Title Page -->
+    <section class="page" id="page1" style="position: relative; overflow: hidden;">
+    
+      <!-- 1. The Vintage Background Texture -->
       <div class="film-grain"></div>
+    
+      <!-- 2. The D3 Animation Layer (Behind Text) -->
+      <div id="p1-vis" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; opacity: 0.6;"></div>
+    
+      <!-- 3. The Main Content (In Front) -->
       <div
-        style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; text-align:center; position:relative; z-index:2;">
-        <h1 style="font-size:4rem; margin-bottom:15px; text-shadow: 3px 3px 6px rgba(0,0,0,0.3);">
-          Critics vs Audience
+        style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; text-align:center; position:relative; z-index:2; padding: 20px;">
+    
+        <!-- Animated Title -->
+        <h1 class="hero-title"
+          style="font-size:4.5rem; margin-bottom:10px; line-height: 1.1; text-shadow: 3px 3px 0px rgba(46, 34, 26, 0.1);">
+          <span style="color:#6F4E37; display:inline-block;" class="slide-in-left">Critics</span>
+          <span
+            style="font-size: 0.6em; font-style: italic; color:#8B6F62; vertical-align: middle; margin: 0 15px;">vs</span>
+          <span style="color:#8B4513; display:inline-block;" class="slide-in-right">Audience</span>
         </h1>
-        <div class="film-strip-divider"></div>
-        <h2 style="font-size:2rem; font-weight:400; color:#8B4513; font-style:italic;">
+    
+        <div class="film-strip-divider" style="width: 120px; opacity: 0; animation: fadeIn 1.5s ease forwards 0.8s;"></div>
+    
+        <h2
+          style="font-size:1.8rem; font-weight:400; color:#5c4033; font-style:italic; margin-top: 15px; opacity: 0; animation: fadeUp 1s ease forwards 1s;">
           Exploring Movie Ratings from Both Sides
         </h2>
-
-        <p class="section-desc" style="max-width:600px; margin-top:50px;">
+    
+        <p class="section-desc"
+          style="max-width:550px; margin-top:30px; font-size: 1.1rem; opacity: 0; animation: fadeUp 1s ease forwards 1.3s;">
           A visual journey through how critics and audiences respond to the same films.
-        </p>
-
-        <button class="load-more vintage-button" onclick="showNextPage(2, this)" style="margin-top:70px;">
+        </p >
+    
+        <!-- Pulsing Button -->
+        <button class="load-more vintage-button pulse-btn" onclick="showNextPage(2, this)"
+          style="margin-top:60px; opacity: 0; animation: fadeUp 1s ease forwards 1.6s;">
           <span class="button-film-strip"></span>
           Start the Journey ↓
         </button>
@@ -112,8 +131,84 @@
       </div>
     </section>
 
+<!-- ⭐ PAGE 3: The Scale of Data -->
+<section class="page hidden" id="page3">
+  <div class="film-grain"></div>
+
+  <div class="page-header">
+    <!-- Title changed to emphasize the dataset's reliability -->
+    <h1>The Scale of the Archive</h1>
+    <div class="film-strip-divider"></div>
+  </div>
+
+  <p class="intro-text" style="max-width:750px; margin: 0 auto 32px; text-align:center; line-height: 1.6;">
+    We use Rotten Tomatoes for this analysis due to its comprehensiveness. This streamgraph visualizes the volume of the
+    database: thousands of films spanning over a century.
+    <br>
+    The diversity in genres ensures that our analysis is based on a truly representative sample of film history.
+
+    <br>
+    <span style="font-size:13px; color:#8B6F62; border-bottom: 1px dashed #8B6F62; padding-bottom: 2px;">
+      (Drag the slider below to explore the depth of the library over time)
+    </span>
+  </p >
+
+  <!-- Timeline Card -->
+  <div class="timeline-card card" style="max-width:900px; margin:0 auto 40px;">
+
+    <!-- Changed Header inside the card -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <strong>Database Composition by Genre</strong>
+      <div id="legendContainer" style="display:flex; gap:15px; font-size:12px;">
+        <!-- Legend will be injected by JS -->
+      </div>
+    </div>
+
+    <div class="controls" style="margin-top:20px;">
+      <!-- Year Display (Centered) -->
+      <div style="text-align: center; margin-bottom: 5px;">
+        <span style="font-size:13px; color:#8B6F62; margin-right: 5px;">Year</span>
+        <span id="yearRangeLabel" class="year-range-label-p3"
+          style="display: inline-block; min-width: 45px; text-align: center; font-weight: bold; color: #8B4513; font-size: 15px;">
+          2024
+        </span>
+      </div>
+
+      <!-- Slider (Centered above graph) -->
+      <div style="display: flex; justify-content: center;">
+        <input id="yearRange" class="timeline-year-slider" type="range" min="1970" max="2024" step="1" value="2024">
+      </div>
+    </div>
+
+    <svg id="timeline-svg"></svg>
+
+    <!-- Updated Stats Labels to sound more like "Data Volume" -->
+    <div class="timeline-stats" style="
+                margin-top:5px;
+                font-size:14px;
+                color:#8B6F62;
+                display:flex;
+                justify-content:center;
+                gap:20px;
+                flex-wrap:wrap;
+                border-top: 1px dashed #d3c4bc;
+                padding-top: 10px;
+             ">
+      <div><strong>Archive Year:</strong> <span id="currentYear" style="color:#D2691E; font-weight:bold;">—</span>
+      </div>
+      <div><strong>Most Cataloged Genre:</strong> <span id="topGenreYear">—</span></div>
+      <div><strong>Total Films in Database:</strong> <span id="totalReleasesYear">—</span></div>
+    </div>
+  </div>
+
+  <button class="load-more vintage-button" onclick="showNextPage(4, this)" style="margin-top:10px;">
+    <span class="button-film-strip"></span>
+    Start the Game ↓
+  </button>
+</section>
+
     <!-- PAGE 3: Guessing Game -->
-    <section class="page hidden" id="page3">
+    <section class="page hidden" id="page4">
       <div class="film-grain"></div>
       <div class="page-header">
         <h1>Critics vs Audience: Guess the Score!</h1>
@@ -121,8 +216,8 @@
       </div>
       <p class="intro-text">
         Now that we know what the scores mean, let's play a quick game.
-        You’ll see either the <strong>Audience Score</strong> or the <strong>Critic Score</strong>
-        for a movie, and your goal is to guess the missing one.
+        You’ll see the <strong>Critic Score</strong>
+        for a movie, and your goal is to guess the <strong>Audience Score</strong>.
       </p>
 
       <div id="guessing-carousel"></div>
@@ -131,7 +226,7 @@
         We have 5 movies for you to guess — try them all before moving on!
       </p>
 
-      <button class="load-more vintage-button hidden" id="carousel-next-btn" onclick="showNextPage(4, this)">
+      <button class="load-more vintage-button hidden" id="carousel-next-btn" onclick="showNextPage(5, this)">
         <span class="button-film-strip"></span>
         Load More ↓
       </button>
@@ -139,7 +234,7 @@
 
 
     <!-- PAGE 4: Outliers -->
-    <section class="page hidden" id="page4">
+    <section class="page hidden" id="page5">
       <div class="film-grain"></div>
       <div class="page-header" style="margin-bottom:10px;">
         <h1 style="margin-top:20px">Sometimes the Opinions Diverge</h1>
@@ -262,7 +357,7 @@
         These films give us a glimpse into how opinions can diverge. Next, let's compare their top-rated movies.
       </p>
 
-      <button class="load-more vintage-button" onclick="showNextPage(5, this)" style="margin-top:10px;">
+      <button class="load-more vintage-button" onclick="showNextPage(6, this)" style="margin-top:10px;">
 
         <span class="button-film-strip"></span>
         Load More ↓
@@ -270,7 +365,7 @@
     </section>
 
     <!-- PAGE 5: Venn -->
-    <section class="page hidden" id="page5">
+    <section class="page hidden" id="page6">
       <div class="film-grain"></div>
       <div class="page-header" style="margin-bottom: 6px;">
         <h1 id="venn-title" style="margin-top:0px; font-size:2rem;">Top 50 Movies: Critic vs Audience</h1>
@@ -299,14 +394,14 @@
         But what happens when we step back and look at the bigger picture?
       </p>
 
-      <button class="load-more vintage-button" onclick="showNextPage(6, this)" style="margin-top:5px;">
+      <button class="load-more vintage-button" onclick="showNextPage(7, this)" style="margin-top:5px;">
         <span class="button-film-strip"></span>
         Load More ↓
       </button>
     </section>
 
     <!-- PAGE 6: Long-Term Trends -->
-    <section class="page hidden" id="page6" style="background-color:#F5E6D3; padding:60px 0;">
+    <section class="page hidden" id="page7" style="background-color:#F5E6D3; padding:60px 0;">
       <div class="film-grain"></div>
       <div style="max-width:950px; margin:auto; font-family:'Crimson Text', serif; position:relative; z-index:2;">
 
@@ -332,7 +427,7 @@
           <div id="chart-q2"></div>
         </div>
 
-        <button class="load-more vintage-button" onclick="showNextPage(7, this)" style="margin-top:40px;">
+        <button class="load-more vintage-button" onclick="showNextPage(8, this)" style="margin-top:40px;">
           <span class="button-film-strip"></span>
           Load More ↓
         </button>
@@ -341,7 +436,7 @@
     </section>
 
     <!-- PAGE 7: Patterns Across Genres -->
-    <section class="page hidden" id="page7" style="background-color:#F5E6D3; padding:60px 0;">
+    <section class="page hidden" id="page8" style="background-color:#F5E6D3; padding:60px 0;">
       <div class="film-grain"></div>
       <div style="max-width:1000px; margin:auto; font-family:'Crimson Text', serif; position:relative; z-index:2;">
 
@@ -384,7 +479,7 @@
 
         </div>
 
-        <button class="load-more vintage-button" onclick="showNextPage(8, this)" style="margin-top:40px;">
+        <button class="load-more vintage-button" onclick="showNextPage(9, this)" style="margin-top:40px;">
           <span class="button-film-strip"></span>
           Load More ↓
         </button>
@@ -393,39 +488,43 @@
     </section>
 
 
-    <!-- PAGE 8: Conclusion lead-in -->
-    <section class="page hidden" id="page8">
+<!-- PAGE 8: Conclusion lead-in -->
+    <section class="page hidden" id="page9">
       <div class="film-grain"></div>
 
       <div class="page-header">
         <h1>So... Who Should You Trust?</h1>
         <div class="film-strip-divider"></div>
       </div>
+
       <p class="section-desc">
         After analyzing thousands of films across genres and decades, one pattern stands out:
-        critics and audiences agree far more often than the disagreements suggest.
-        You don’t have to choose — both groups usually point to the same qualities in a good movie.
-      </p>
+        critics and audiences agree far more often than the disagreements suggest. You don't have
+        to choose — both groups usually point to the same qualities in a good movie.
+      </p >
 
       <p class="story-paragraph" style="margin-top:30px;">
-        <strong>Now it's your turn!</strong> Use the interactive tool below to explore movies based on genre, score,
-        timeline, and vote counts.
+        <strong>Now it's your turn!</strong>
+        Use the interactive tool below to explore movies based on genre, score, timeline, and vote counts.
+      </p >
 
-      </p>
-      <button class="load-more vintage-button" onclick="showNextPage(9, this)">
-        <span class="button-film-strip"></span>
-        Load More ↓
-      </button>
+      <div id="page8-cta">
+        <div id="page8-video-container">
+          <video id="page8-video" autoplay muted loop playsinline>
+            <source src="video/zootopiz.mp4" type="video/mp4">
+          </video>
+        </div>
 
-      <div id="page8-video-container">
-        <video id="page8-video" autoplay muted loop playsinline>
-          <source src="video/zootopiz.mp4" type="video/mp4">
-        </video>
+        <button class="load-more vintage-button" onclick="showNextPage(10, this)">
+          <span class="button-film-strip"></span>
+          Load More ↓
+        </button>
       </div>
-
     </section>
+
+
     <!-- PAGE 9: Recommendation Tool (Corrected Layout) -->
-    <section class="page hidden" id="page9">
+    <section class="page hidden" id="page10">
       <div class="film-grain"></div>
 
       <div id="recommendation-tool-container">
@@ -551,7 +650,7 @@
         </div>
       </div>
 
-      <button class="load-more vintage-button" onclick="showNextPage(10, this)" style="margin-top:40px;">
+      <button class="load-more vintage-button" onclick="showNextPage(11, this)" style="margin-top:40px;">
         <span class="button-film-strip"></span>
         Load More ↓
       </button>
@@ -560,7 +659,7 @@
 
 
     <!-- PAGE 10: Final text + Back to Top -->
-    <section class="page hidden" id="page10">
+    <section class="page hidden" id="page11">
       <div class="film-grain"></div>
 
       <div class="page-header">

@@ -2195,7 +2195,7 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener('DOMContentLoaded', function () {
   // Animate bars when page becomes visible
   function animateDivergentBars() {
-    const page4 = document.getElementById('page4');
+    const page4 = document.getElementById('page5');
 
     // removed the scrollIntoView call so it doesn't hijack scroll
     // previously:
@@ -2223,7 +2223,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }, { threshold: 0.3 });
 
-  const page4 = document.getElementById('page4');
+  const page4 = document.getElementById('page5');
   if (page4) {
     page4Observer.observe(page4);
   }
@@ -2257,7 +2257,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // Only show bottom-fixed when page9 is in viewport
 function updateBottomFixed() {
   const bottom = document.querySelector(".bottom-fixed");
-  const page9 = document.getElementById("page9");
+  const page9 = document.getElementById("page10");
   if (!bottom || !page9) return;
 
   const rect = page9.getBoundingClientRect();
@@ -2275,7 +2275,7 @@ window.addEventListener("load", updateBottomFixed);
 
 
 function handlePage8Video() {
-  const page8 = document.getElementById("page8");
+  const page8 = document.getElementById("page9");
   const vidContainer = document.getElementById("page8-video-container");
   const rect = page8.getBoundingClientRect();
 
@@ -2294,7 +2294,7 @@ window.addEventListener("load", handlePage8Video);
 
 
 document.addEventListener("DOMContentLoaded", () => {
-  const page6 = document.getElementById("page6");
+  const page6 = document.getElementById("page7");
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -2314,3 +2314,476 @@ document.addEventListener("DOMContentLoaded", () => {
 
   observer.observe(page6);
 });
+
+
+
+// ========================================================
+// 🎬 Page 3 – Genre Streamgraph (Top 7 + Time Compression + Tooltip + Synced Slider)
+// ========================================================
+
+(function() { // IIFE to isolate scope
+
+    /* ---------- Utilities ---------- */
+    function getField(d, names) {
+        for (const n of names) if (d[n] !== undefined) return d[n];
+        return undefined;
+    }
+
+    /* ---------- Configuration ---------- */
+    const csvPath_p3 = "data/imdb_tomatoes.csv";
+    const dom = {
+        svg: d3.select("#timeline-svg"),
+        sliderContainer: document.querySelector(".controls"), // Parent of slider
+        slider: document.getElementById("yearRange"),
+        label: document.getElementById("yearRangeLabel"),
+        statYear: document.getElementById("currentYear"),
+        statTopGenre: document.getElementById("topGenreYear"),
+        statTotal: document.getElementById("totalReleasesYear"),
+        legend: d3.select("#legendContainer")
+    };
+
+    // Expanded Vintage Palette for Top 7 + Other
+    const colorPalette = [
+        "#D2691E", // 1. Chocolate
+        "#C09858", // 2. Golden Bronze
+        "#8B4513", // 3. Saddle Brown
+        "#A0522D", // 4. Sienna (Reddish Brown)
+        "#556B2F", // 5. Dark Olive Green
+        "#6B8E23", // 6. Olive Drab
+        "#CD853F", // 7. Peru
+        "#A69FA6"  // 8. Other (Muted Gray)
+    ];
+
+    /* ---------- Inject Tooltip Style & Element ---------- */
+    // Create tooltip div if not exists
+    let tooltip = document.getElementById("p3-tooltip");
+    if (!tooltip) {
+        tooltip = document.createElement("div");
+        tooltip.id = "p3-tooltip";
+        tooltip.style.cssText = `
+            position: absolute;
+            display: none;
+            background: rgba(244, 226, 198, 0.95); /* Vintage cream background */
+            border: 1px solid #8B4513;
+            padding: 8px 12px;
+            border-radius: 4px;
+            pointer-events: none;
+            font-family: 'Courier Prime', monospace; /* Or inherit */
+            font-size: 13px;
+            color: #4a3b32;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            min-width: 160px;
+            line-height: 1.4;
+        `;
+        document.body.appendChild(tooltip);
+    }
+
+    /* ---------- Main Logic ---------- */
+    d3.csv(csvPath_p3).then(raw => {
+        
+        // 1. Data Cleaning
+        let parsedRows = raw.map(r => {
+            const yearVal = getField(r, ["release_year", "year", "Year"]);
+            const genreStr = getField(r, ["genres", "genre", "Genre", "Genres"]) || "Other";
+            return {
+                year: parseInt(yearVal) || NaN,
+                genres: genreStr.split(',').map(g => g.trim()).filter(g => g)
+            };
+        }).filter(d => !isNaN(d.year) && d.year > 1920 && d.year <= 2024);
+
+        // 2. Identify Top 7 Genres
+        const genreCounts = {};
+        parsedRows.forEach(row => {
+            row.genres.forEach(g => {
+                genreCounts[g] = (genreCounts[g] || 0) + 1;
+            });
+        });
+
+        const sortedGenres = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]);
+        const top7 = sortedGenres.slice(0, 7).map(d => d[0]);
+        const keys = [...top7, "Other"];
+
+        console.log("Top 7 Genres:", top7);
+
+        // 3. Aggregate Data per Year
+        const yearMap = new Map();
+        const minYear = d3.min(parsedRows, d => d.year);
+        const maxYear = d3.max(parsedRows, d => d.year);
+        const allYears = d3.range(minYear, maxYear + 1);
+
+        allYears.forEach(y => {
+            const obj = { year: y, total: 0 };
+            keys.forEach(k => obj[k] = 0);
+            yearMap.set(y, obj);
+        });
+
+        parsedRows.forEach(row => {
+            const yObj = yearMap.get(row.year);
+            if (yObj) {
+                row.genres.forEach(g => {
+                    if (top7.includes(g)) {
+                        yObj[g]++;
+                    } else {
+                        yObj["Other"]++;
+                    }
+                    yObj.total++;
+                });
+            }
+        });
+
+        const chartData = Array.from(yearMap.values());
+
+        // 4. Stack Configuration
+        const stack = d3.stack()
+            .keys(keys)
+            .offset(d3.stackOffsetSilhouette) 
+            .order(d3.stackOrderNone);
+
+        const series = stack(chartData);
+
+        // 5. Draw Chart
+        const svg = dom.svg;
+        svg.selectAll("*").remove();
+
+        // --- Layout Dimensions ---
+        const containerNode = svg.node().parentNode;
+        let containerWidth = containerNode.getBoundingClientRect().width || 800;
+        
+        // Adjust width to fit comfortably
+        let width = containerWidth - 20; 
+        let height = Math.min(width / 2.5, 300); 
+        if (height < 200) height = 200;
+
+        const margin = { top: 10, right: 15, bottom: 25, left: 15 };
+        const innerWidth = width - margin.left - margin.right;
+
+        svg.attr("viewBox", `0 0 ${width} ${height}`)
+           .attr("preserveAspectRatio", "xMidYMid meet");
+
+        // --- Piecewise X Scale (Time Compression) ---
+        const splitYear = 1970;
+        const splitRatio = 0.25; // 1920-1970 takes 25% space
+        const splitPixel = margin.left + innerWidth * splitRatio;
+
+        // Polylinear Scale: Input Year -> Output Pixels
+        const x = d3.scaleLinear()
+            .domain([minYear, splitYear, maxYear])
+            .range([margin.left, splitPixel, width - margin.right]);
+
+        const yMax = d3.max(series, layer => d3.max(layer, d => d[1]));
+        const yMin = d3.min(series, layer => d3.min(layer, d => d[0]));
+        
+        const y = d3.scaleLinear()
+            .domain([yMin, yMax])
+            .range([height - margin.bottom, margin.top]);
+
+        const color = d3.scaleOrdinal()
+            .domain(keys)
+            .range(colorPalette);
+
+        const area = d3.area()
+            .curve(d3.curveBasis)
+            .x(d => x(d.data.year))
+            .y0(d => y(d[0]))
+            .y1(d => y(d[1]));
+
+        // --- ALIGN SLIDER TO X-SCALE ---
+        // Critical Step: We make the slider width match the SVG width.
+        // But more importantly, we will map the slider values to PIXELS, not YEARS.
+        if (dom.slider) {
+            // 1. Match physical width
+            dom.sliderContainer.style.padding = "0"; // Remove container padding if any
+            dom.slider.style.width = `${width}px`;   // Match SVG ViewBox width
+            dom.slider.style.marginLeft = "0px";
+            
+            // 2. Set Slider Domain to Match Visual Range (Pixels)
+            // Range is from margin.left to width-margin.right
+            const rangeStart = margin.left;
+            const rangeEnd = width - margin.right;
+            
+            dom.slider.min = rangeStart;
+            dom.slider.max = rangeEnd;
+            dom.slider.step = 1; // Move by 1 pixel unit
+            
+            // Set initial value to max (Pixel position of 2024)
+            dom.slider.value = rangeEnd;
+        }
+
+        // --- Custom Ticks ---
+        const customTicks = [];
+        for (let y = Math.ceil(minYear/25)*25; y < 1970; y+=25) if(y>=minYear) customTicks.push(y);
+        if(!customTicks.includes(1970)) customTicks.push(1970);
+        for (let y = 1975; y <= maxYear; y+=5) customTicks.push(y);
+
+        // Render Legend
+        dom.legend.html("");
+        keys.forEach(k => {
+            dom.legend.append("div")
+                .attr("class", "legend-item")
+                .style("font-size", "10px")
+                .html(`<span class="legend-dot" style="background:${color(k)}"></span> ${k}`);
+        });
+
+        // Render Layers
+        const layerGroup = svg.append("g");
+        const paths = layerGroup.selectAll("path")
+            .data(series)
+            .join("path")
+            .attr("class", "stream-layer")
+            .attr("d", area)
+            .attr("fill", d => color(d.key))
+            .attr("cursor", "pointer")
+            .attr("stroke", "white")
+            .attr("stroke-width", 0); // Default
+
+        // Render X Axis
+        svg.append("g")
+            .attr("transform", `translate(0,${height - margin.bottom})`)
+            .call(d3.axisBottom(x)
+                .tickValues(customTicks)
+                .tickFormat(d3.format("d"))
+                .tickSize(4)
+            )
+            .attr("color", "#8B6F62")
+            .select(".domain").remove();
+
+        // 6. Interaction Layers
+        const overlay = svg.append("rect")
+            .attr("class", "future-overlay")
+            .attr("x", width)
+            .attr("y", 0)
+            .attr("width", width)
+            .attr("height", height);
+
+        const cursorLine = svg.append("line")
+            .attr("class", "cursor-line")
+            .attr("y1", margin.top)
+            .attr("y2", height - margin.bottom)
+            .attr("opacity", 0);
+
+        const dotsGroup = svg.append("g").attr("class", "dots-group");
+
+        // State
+        let currentSliderYear = maxYear;
+
+        // 7. Slider Logic (The Time Machine)
+        dom.label.innerText = maxYear;
+        
+        // Initial Draw
+        updateVisuals(maxYear);
+        updateBottomStats(maxYear); 
+
+        dom.slider.addEventListener("input", (e) => {
+            // 1. Get Pixel Value from Slider
+            const pixelPos = +e.target.value;
+            
+            // 2. Invert Pixel to Year (Using the polylinear scale)
+            // This automatically handles the compression:
+            // A pixel movement on left returns years slowly.
+            // A pixel movement on right returns years quickly.
+            const rawYear = x.invert(pixelPos); 
+            currentSliderYear = Math.round(rawYear);
+            
+            // Boundary Check
+            if (currentSliderYear < minYear) currentSliderYear = minYear;
+            if (currentSliderYear > maxYear) currentSliderYear = maxYear;
+
+            // 3. Update UI
+            dom.label.innerText = currentSliderYear;
+            updateVisuals(currentSliderYear);
+            updateBottomStats(currentSliderYear);
+        });
+
+        // 8. Hover Logic (Floating Box - Simplified)
+        paths.on("mousemove", function(event, d) {
+            const hoveredGenre = d.key;
+            
+            // Highlight effect
+            paths.attr("opacity", 0.5); 
+            d3.select(this).attr("opacity", 1).attr("stroke", "#fff").attr("stroke-width", 1);
+
+            // Get Data for CURRENT SLIDER YEAR
+            const idx = currentSliderYear - minYear;
+            const data = chartData[idx];
+
+            if (data) {
+                const count = data[hoveredGenre] || 0;
+                const total = data.total || 1;
+                // Calculate Percentage
+                const pct = ((count / total) * 100).toFixed(1) + "%";
+
+                // Build Tooltip Content (Minimalist)
+                tooltip.innerHTML = `
+                    <div style="border-bottom:1px dashed #8B4513; margin-bottom:4px; padding-bottom:4px;">
+                        <strong>Year: ${currentSliderYear}</strong>
+                    </div>
+                    <div style="margin-top:4px; color:${color(hoveredGenre)}; font-weight:bold;">
+                        ● ${hoveredGenre}
+                    </div>
+                    <div>Count: ${count}</div>
+                    <div>Share: ${pct}</div>
+                `;
+
+                // Position Tooltip
+                tooltip.style.display = "block";
+                tooltip.style.left = (event.pageX + 15) + "px";
+                tooltip.style.top = (event.pageY - 15) + "px";
+            }
+        })
+        .on("mouseleave", function() {
+            // Reset Highlight
+            paths.attr("opacity", 1).attr("stroke-width", 0);
+            // Hide Tooltip
+            tooltip.style.display = "none";
+        });
+
+
+        // Helper: Update Bottom Static Text
+        function updateBottomStats(year) {
+            const idx = year - minYear;
+            const data = chartData[idx];
+            if(!data) return;
+
+            dom.statYear.textContent = year;
+            dom.statTotal.textContent = data.total.toLocaleString();
+
+            // Calculate Top Genre
+            let maxG = "None";
+            let maxV = 0;
+            keys.forEach(k => {
+                if(data[k] > maxV) {
+                    maxV = data[k];
+                    maxG = k;
+                }
+            });
+            
+            // Display with percentage
+            const pct = data.total > 0 ? ((maxV/data.total)*100).toFixed(1) + "%" : "0%";
+            dom.statTopGenre.innerHTML = `${maxG} (${pct})`;
+        }
+
+        // Helper: Update Line, Dots, Overlay
+        function updateVisuals(year) {
+            const idx = year - minYear;
+            const currentData = chartData[idx];
+            
+            const xPos = x(year);
+
+            // Overlay
+            overlay.attr("x", xPos).attr("width", Math.max(0, width - xPos));
+            
+            // Line
+            cursorLine.attr("x1", xPos).attr("x2", xPos).attr("opacity", 1);
+
+            // Dots
+            const layerPoints = series.map(layer => {
+                const d = layer[idx]; 
+                if (!d) return null;
+                const thickness = Math.abs(y(d[0]) - y(d[1]));
+                const yCenter = (y(d[0]) + y(d[1])) / 2;
+                return { 
+                    key: layer.key, 
+                    y: yCenter, 
+                    thickness: thickness 
+                };
+            }).filter(pt => pt && pt.thickness > 8);
+
+            const circles = dotsGroup.selectAll("circle")
+                .data(layerPoints, d => d.key);
+
+            circles.join(
+                enter => enter.append("circle")
+                    .attr("r", 3.5)
+                    .attr("fill", "#fff")
+                    .attr("stroke", d => color(d.key))
+                    .attr("stroke-width", 2)
+                    .attr("cx", xPos)
+                    .attr("cy", d => d.y),
+                update => update
+                    .attr("cx", xPos)
+                    .attr("cy", d => d.y)
+                    .attr("stroke", d => color(d.key)),
+                exit => exit.remove()
+            );
+        }
+    });
+
+})();
+
+
+// ========================================================
+// 🎬 Page 1 – Intro Animation (Floating Data Particles)
+// ========================================================
+(function() {
+    const container = d3.select("#p1-vis");
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    // Create SVG
+    const svg = container.append("svg")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .style("pointer-events", "none"); // Let clicks pass through to text
+
+    // Configuration
+    const particleCount = 40;
+    // Colors: Critics (Orange/Red), Audience (Gold/Bronze), Neutral (Brown)
+    const colors = ["#D2691E", "#C09858", "#8B4513", "#A0522D"]; 
+
+    // Generate Random Particles
+    const particles = d3.range(particleCount).map(() => ({
+        x: Math.random() * width,
+        y: height + Math.random() * 200, // Start below screen
+        r: Math.random() * 6 + 2,        // Random size
+        speed: Math.random() * 0.8 + 0.2, // Random speed
+        color: colors[Math.floor(Math.random() * colors.length)],
+        opacity: Math.random() * 0.4 + 0.1
+    }));
+
+    // Draw Circles
+    const circles = svg.selectAll("circle")
+        .data(particles)
+        .enter()
+        .append("circle")
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y)
+        .attr("r", d => d.r)
+        .attr("fill", d => d.color)
+        .attr("opacity", d => d.opacity);
+
+    // Animation Loop
+    function animate() {
+        particles.forEach(p => {
+            p.y -= p.speed; // Move up
+            
+            // Reset if it goes off top
+            if (p.y < -20) {
+                p.y = height + 20;
+                p.x = Math.random() * width;
+            }
+        });
+
+        circles
+            .attr("cy", d => d.y)
+            .attr("cx", d => d.x); // Simple update
+
+        requestAnimationFrame(animate);
+    }
+
+    // Start Animation
+    animate();
+
+    // Interactive Parallax (Optional: Mouse moves dots slightly)
+    document.addEventListener("mousemove", (e) => {
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+        
+        circles.attr("transform", d => {
+            const dx = (d.x - mouseX) * 0.02;
+            const dy = (d.y - mouseY) * 0.02;
+            return `translate(${dx}, ${dy})`;
+        });
+    });
+
+})();
